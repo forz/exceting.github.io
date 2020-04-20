@@ -1,401 +1,230 @@
-var hasPushstate = !!(window.history && history.pushState);
-// duoshuo load function
-var duoshuoName = 'yuche'; // change to your DUOSHUO name
-var duoshuoQuery = {short_name: duoshuoName}; // change to your duoshuo name
-function toggleDuoshuoComments(container) {
-    var el = document.createElement('div');
-    el.setAttribute('data-thread-key', postTitle);
-    el.setAttribute('data-url', postHref);
-    el.setAttribute('data-title', postTitle);
-    el.setAttribute('data-author-key', duoshuoName); // change to your duoshuo name
-    DUOSHUO.EmbedThread(el);
-    jQuery(container).append(el);
-}
+/* eslint-disable node/no-unsupported-features/node-builtins */
+// (mainJs(jQuery, window.moment, window.ClipboardJS, window.IcarusThemeSettings));
 
-var smallScreen = window.screen.width < 500;
+function loadMainJs($, moment, ClipboardJS, config) {
+    if (!$('.columns .column-right-shadow').children().length) {
+        $('.columns .column-right-shadow').append($('.columns .column-right').children().clone());
+    }
 
-//    Generate table of contents
-var generateTOC = function() {
-
-    $(".post-content").find('h1,h2,h3,h4')
-        .each(function (i) {
-            var current = $(this);
-            current.attr("id", "title" + i);
-            $("#toc").append("<li><a id='link" + i + "' href='#title" +
-                i + "' title='" + current.text() + "'>" +
-                current.text() + "</a></li>");
-        });
-
-};
-
-//    Multiple DUOSHUO threads for PJAX START
-
-function  duoshuoInlineComment(){
-    $(".post-content").find('p,pre,ol,ul,blockquote,figure')
-        .each(function () {
-            $(this).attr("class", "disqus");
-            $(this).prepend('<span class="ds-thread-count">+</span>');
-        });
-    $('span.ds-thread-count').each(function(i){
-        var self = $(this);
-        $(this).attr('id','comment' + i );
-        var identifier =  postTitle + $(this).attr('id');
-        var jsonURL = 'http://api.duoshuo.com/threads/counts.jsonp?short_name=' +
-            duoshuoName + '&threads=' + identifier +
-            '&callback=?';
-        $.getJSON(jsonURL,function(data) {
-            $.each(data.response, function(i, item) {
-                if (item.comments !== 0){
-                    self.text(item.comments);
-                    self.css('opacity','0.4');
-                    self.addClass('has-comment');
-                }
-            });
-        });
-        $(this).after('<div class="inline-comment"></div>');
-    });
-
-
-    $('.disqus').mouseover(function() {
-        $(this).find('span.ds-thread-count').css('opacity','1');
-    }).mouseleave(function() {
-        var self = $(this);
-        self.find('span.ds-thread-count').css('opacity','0.4');
-        self.find('span.ds-thread-count').not('.has-comment').css('opacity','0');
-    });
-
-    $('span.ds-thread-count').click(function(event){
-        var self = $(this);
-        if ($('span.ds-thread-count').not(self).hasClass('active')){
-            var l = $('span.ds-thread-count').filter('.active');
-            hideInlineComment(l, l.next());
-        }
-        if (!self.hasClass('active')){
-            self.addClass('active');
-            var inlineComment = $(this).next();
-            inlineComment.fadeIn();
-            $(".post-content").addClass('right');
-            var identifier =  postTitle + $(this).attr('id');
-            if (!inlineComment.hasClass('loaded')){
-                loadInlineComment(inlineComment,identifier);
+    $('.article img:not(".not-gallery-item")').each(function () {
+        // wrap images with link and add caption if possible
+        if ($(this).parent('a').length === 0) {
+            $(this).wrap('<a class="gallery-item" href="' + $(this).attr('src') + '"></a>');
+            if (this.alt) {
+                $(this).after('<p class="has-text-centered is-size-6 caption">' + this.alt + '</p>');
             }
+        }
+    });
+
+    // render images
+    if (typeof ($.fn.lightGallery) === 'function') {
+        $('.article').lightGallery({ selector: '.gallery-item', mode: 'lg-fade' });
+    }
+    if (typeof ($.fn.justifiedGallery) === 'function') {
+        if ($('.justified-gallery > p > .gallery-item').length) {
+            $('.justified-gallery > p > .gallery-item').unwrap();
+        }
+        $('.justified-gallery').justifiedGallery({ rowHeight: 230, margins: 4 });
+    }
+
+    if (typeof moment === 'function') {
+        $('.article-meta time').each(function () {
+            $(this).text(moment($(this).attr('datetime')).fromNow());
+        });
+    }
+
+    $('.article > .content > table').each(function () {
+        if ($(this).width() > $(this).parent().width()) {
+            $(this).wrap('<div class="table-overflow"></div>');
+        }
+    });
+
+    function adjustNavbar() {
+        const navbarWidth = $('.navbar-main .navbar-start').outerWidth() + $('.navbar-main .navbar-end').outerWidth();
+        if ($(document).outerWidth() < navbarWidth) {
+            $('.navbar-main .navbar-menu').addClass('justify-content-start');
         } else {
-            hideInlineComment(self,self.next());
+            $('.navbar-main .navbar-menu').removeClass('justify-content-start');
         }
-        event.stopPropagation();
-    });
-
-
-    // detect a click outside the trigger.
-
-    $('html').click(function() {
-        var triggerOpened = $('span.ds-thread-count').filter('.active');
-        triggerOpened.removeClass('active');
-        if(triggerOpened.next().is(":visible")) {
-            triggerOpened.next().fadeOut();
-        }
-        $(".post-content").filter('.right').removeClass('right');
-    });
-
-    $('.inline-comment').click(function(){
-        event.stopPropagation();
-
-    })
-
-
-    var hideInlineComment = function(trigger,comment) {
-
-        trigger.removeClass('active');
-        $(".post-content").removeClass('right');
-        comment.fadeOut();
-
-    };
-
-
-    var loadInlineComment = function (container,id){
-        $(container).addClass('loaded');
-        var el = document.createElement('div');
-        el.setAttribute('data-thread-key', id);
-        el.setAttribute('data-url', postHref);
-        el.setAttribute('data-title', postTitle);
-        el.setAttribute('data-author-key', duoshuoName); // change to your duoshuo name
-        DUOSHUO.EmbedThread(el);
-        $(container).append(el);
     }
-}
+    adjustNavbar();
+    $(window).resize(adjustNavbar);
 
-//    Multiple DUOSHUO threads for PJAX END
+    function toggleFold(codeBlock, isFolded) {
+        const $toggle = $(codeBlock).find('.fold i');
+        !isFolded ? $(codeBlock).removeClass('folded') : $(codeBlock).addClass('folded');
+        !isFolded ? $toggle.removeClass('fa-angle-right') : $toggle.removeClass('fa-angle-down');
+        !isFolded ? $toggle.addClass('fa-angle-down') : $toggle.addClass('fa-angle-right');
+    }
 
+    function createFoldButton(fold) {
+        return '<span class="fold">' + (fold === 'unfolded' ? '<i class="fas fa-angle-down"></i>' : '<i class="fas fa-angle-right"></i>') + '</span>';
+    }
 
+    $('figure.highlight table').wrap('<div class="highlight-body">');
+    if (typeof config !== 'undefined'
+        && typeof config.article !== 'undefined'
+        && typeof config.article.highlight !== 'undefined') {
 
-//   Scroll spy headline
-
-var scrollSpy = function(){
-    for (var i = 1; i < 7; i++) {
-        var headI = 'h' + i;
-        $('#toc-content').text('Introduction');
-        $('.post-content').find(headI).each(function () {
-            var self = $(this);
-            self.waypoint(function () {
-                $('#navbar-toc').show();
-                var tocText = self.text();
-                $('#toc-content').text(tocText);
-            }, {
-                context: '.scroller',
-                offset: 90
-            });
+        $('figure.highlight').addClass('hljs');
+        $('figure.highlight .code .line span').each(function () {
+            const classes = $(this).attr('class').split(/\s+/);
+            if (classes.length === 1) {
+                $(this).addClass('hljs-' + classes[0]);
+                $(this).removeClass(classes[0]);
+            }
         });
-    };
-};
-
-//   Easter egg
-var kaelEgg = new window.keypress.Listener();
-function showEgg(){
-    $('.block').remove();
-    $('#egg-frame').fadeIn('slow');
-    $('#close-button').fadeIn('slow');
-    kaelEgg.reset();
-}
-var kaelEggCombo = kaelEgg.sequence_combo("q w e r", function() {
-    lives = 0.8;
-    $('.block').show();
-    $('.egg').addClass('bounceIn').removeClass('bounceOut');
-    $('.egg').append('<iframe id="egg-frame" style="display: none;margin-top:0;" src="http://kael.qiniudn.com/" frameborder="0" width="100%" height="700px" scrolling="no">');
-//    iframe onload taken from http://www.nczonline.net/blog/2009/09/15/iframes-onload-and-documentdomain/
-    var iframe = document.getElementById('egg-frame');
-    if (iframe.attachEvent){
-        iframe.attachEvent("onload", function(){
-            showEgg();
-        });
-    } else {
-        iframe.onload = function(){
-            showEgg();
-        };
-    }
-}, true);
-
-$('#close-button').click(function(){
-    $('.egg').removeClass('bounceIn').addClass('bounceOut');
-    kaelEgg.register_combo(kaelEggCombo);
-    return false;
-});
-
-//  Easter egg END
-
-afterPjax();
-function afterPjax() {
-
-    postTitle = document.title;
-    postHref = window.location.href;
-
-    var ie = navigator.userAgent.match(/windows\snt\s([\d\.]+)/i);
-    if (ie !== null && ie[1] < 6) {
-        document.getElementsByTagName('html')[0].className += ' windows-xp';
-    }
-
-    //    Scroll-To-Top button take effect
-    $("#scroll-up").click(function () {
-        $(".scroller").animate({ scrollTop: "10" }, "350");
-    });
 
 
+        const clipboard = config.article.highlight.clipboard;
+        const fold = config.article.highlight.fold.trim();
 
-
-    //  Mutil-push-menu init
-    new mlPushMenu(document.getElementById('mp-menu'), document.getElementById('trigger'), {
-        type: 'cover'
-    });
-
-    $('img').each( function() {
-        var $img = $(this),
-            href = $img.attr('src');
-        $img.wrap('<a data-lightbox="a" href="' + href + '" title="' + $img.attr('alt') +'"' + '></a>');
-    });
-
-    $('a[data-lightbox="a"]').fluidbox({
-        stackIndex : 1
-    });
-
-
-
-    $('.share-button').popover({
-        placement: 'bottom',
-        content: '<a target="_blank" href="http://service.weibo.com/share/share.php?url=' +
-            postHref + "&title=" + postTitle +
-            '"><i  class=" fa share-icon fa-weibo fa-2x"></i></a>' +
-            '<a target="_blank" href="http://widget.renren.com/dialog/share?resourceUrl=' +
-            postHref + "&title=" + postTitle +
-            '"><i class="fa share-icon fa-renren fa-2x"></i></a>' +
-            '<a target="_blank" href="http://twitter.com/share?url=' +
-            postHref +
-            '"><i class="fa share-icon fa-twitter fa-2x"></i></a>' +
-            '<a target="_blank" href="https://plus.google.com/share?url=' +
-            postHref + "&title=" + postTitle +
-            '"><i class="fa share-icon fa-google-plus fa-2x"></i></a>' +
-            '<a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=' +
-            postHref + "&title=" + postTitle +
-            '"><i class="fa fa-facebook-square fa-2x"></i></a>',
-        html: true
-    });
-
-//    Fixed Multi-level-push-menu for PJAX
-    $(".mp-pjax a").click(function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        var pjaxHref = this.href;
-        $('.scroller').trigger('click');
-        if ( hasPushstate ) {
-            $(".pjax-hidden a").each(function () {
-                if (this.href === pjaxHref) {
-                    $(this).trigger('click');
+        $('figure.highlight').each(function () {
+            if ($(this).find('figcaption').length) {
+                $(this).find('figcaption').addClass('level is-mobile');
+                $(this).find('figcaption').append('<div class="level-left">');
+                $(this).find('figcaption').append('<div class="level-right">');
+                $(this).find('figcaption div.level-left').append($(this).find('figcaption').find('span'));
+                $(this).find('figcaption div.level-right').append($(this).find('figcaption').find('a'));
+            } else {
+                if (clipboard || fold) {
+                    $(this).prepend('<figcaption class="level is-mobile"><div class="level-left"></div><div class="level-right"></div></figcaption>');
                 }
+            }
+        });
+
+        if (typeof ClipboardJS !== 'undefined' && clipboard) {
+            $('figure.highlight').each(function () {
+                const id = 'code-' + Date.now() + (Math.random() * 1000 | 0);
+                const button = '<a href="javascript:;" class="copy" title="Copy" data-clipboard-target="#' + id + ' .code"><i class="fas fa-copy"></i></a>';
+                $(this).attr('id', id);
+                $(this).find('figcaption div.level-right').append(button);
+            });
+            new ClipboardJS('.highlight .copy'); // eslint-disable-line no-new
+        }
+
+        if (fold) {
+            $('figure.highlight').each(function () {
+                if ($(this).find('figcaption').find('span').length > 0) {
+                    const span = $(this).find('figcaption').find('span');
+                    if (span[0].innerText.indexOf('>folded') > -1) {
+                        span[0].innerText = span[0].innerText.replace('>folded', '');
+                        $(this).find('figcaption div.level-left').prepend(createFoldButton('folded'));
+                        toggleFold(this, true);
+                        return;
+                    }
+                }
+                $(this).find('figcaption div.level-left').prepend(createFoldButton(fold));
+                toggleFold(this, fold === 'folded');
+            });
+
+            $('figure.highlight figcaption .fold').click(function () {
+                const $code = $(this).closest('figure.highlight');
+                toggleFold($code.eq(0), !$code.hasClass('folded'));
             });
         }
-    });
-
-    $("a.back-home").click(function (e) {
-        e.preventDefault();
-        $('.scroller').trigger('click');
-        $('#nexus-back').trigger('click');
-    });
-
-
-
-//  Some JS hacks
-
-    $("a.fa-archive,a.fa-copy,a.fa-tags").click(function () {
-        $(".fa-angle-left").css('opacity', '0');
-    });
-    $(".mp-back").click(function () {
-        $(".fa-angle-left").css('opacity','1');
-    });
-//    Instant search init
-    $('input.search-archive').quicksearch('li.search-archive-li');
-    $('input.search-category').quicksearch('li.search-category-li');
-    $('input.search-tag').quicksearch('li.search-tag-li');
-
-//    Detect URL is Post page or NOT
-
-    isPostPage = false;
-
-    if (location.pathname === "/" || location.pathname.match("/tags/") !== null
-        || location.pathname.match("/categories/") !== null ||
-        location.pathname.match("/page/") !== null) {
-        isPostPage = false;
-    } else {
-        isPostPage = true;
     }
-//    Scroll 500px show Scroll-To-Top button
-    $('.scroller').scroll(function () {
-        var scroll2top = $('.scroller').scrollTop();
-        if (scroll2top > 500) {
-            $("#scroll-up").show();
+
+    const $toc = $('#toc');
+    if ($toc.length > 0) {
+        const $mask = $('<div>');
+        $mask.attr('id', 'toc-mask');
+
+        $('body').append($mask);
+
+        function toggleToc() { // eslint-disable-line no-inner-declarations
+            $toc.toggleClass('is-active');
+            $mask.toggleClass('is-active');
+        }
+
+        $toc.on('click', toggleToc);
+        $mask.on('click', toggleToc);
+        $('.navbar-main .catalogue').on('click', toggleToc);
+    }
+
+    // hexo-util/lib/is_external_link.js
+    function isExternalLink(input, sitehost, exclude) {
+        try {
+            sitehost = new URL(sitehost).hostname;
+        } catch (e) { }
+
+        if (!sitehost) return false;
+
+        // handle relative url
+        var data;
+        try {
+            data = new URL(input, 'http://' + sitehost);
+        } catch (e) {
+            return false;
+        }
+
+        // handle mailto: javascript: vbscript: and so on
+        if (data.origin === 'null') return false;
+
+        const host = data.hostname;
+
+        if (exclude) {
+            exclude = Array.isArray(exclude) ? exclude : [exclude];
+
+            if (exclude && exclude.length) {
+                for (const i of exclude) {
+                    if (host === i) return false;
+                }
+            }
+        }
+
+        if (host !== sitehost) return true;
+
+        return false;
+    }
+
+    if (typeof config !== 'undefined'
+        && typeof config.site.url !== 'undefined'
+        && typeof config.site.external_link !== 'undefined'
+        && config.site.external_link.enable) {
+        $('.article .content a').filter((i, link) => {
+            return link.href
+                && !$(link).attr('href').startsWith('#')
+                && link.classList.length === 0
+                && isExternalLink(link.href,
+                    config.site.url,
+                    config.site.external_link.exclude);
+        }).each((i, link) => {
+            link.relList.add('noopener');
+            link.target = '_blank';
+        });
+    }
+    // load toc fold or show
+    loadToc();
+}
+
+function loadMathJax() { //加载mathjax
+    $.getScript("//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML", function () {
+        MathJax.Hub.Config({ tex2jax: { inlineMath: [['$', '$'], ['\\(', '\\)']] } });
+        var math = document.getElementsByClassName("entry-content")[0];
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub, math]);
+    });
+}
+
+$(document).ready(function () {
+    loadMainJs(jQuery, window.moment, window.ClipboardJS, window.IcarusThemeSettings);
+    /* 添加背景色 */
+    var navbar = $(".is-fixed-top");
+    var navbar1 = $(".justify-content-start");
+    if (navbar.offset().top > 12) {
+        navbar.addClass("navbar-highlight");
+        navbar1.addClass("navbar-highlight");
+    } else {
+        navbar.removeClass("navbar-highlight");
+        navbar1.removeClass("navbar-highlight");
+    }
+    $(window).scroll(function () {
+        if (navbar.offset().top > 12) {
+            navbar.addClass("navbar-highlight");
+            navbar1.addClass("navbar-highlight");
         } else {
-            $("#scroll-up").hide();
+            navbar.removeClass("navbar-highlight");
+            navbar1.removeClass("navbar-highlight");
         }
     });
-
-
-    $("#scroll-up").hide();
-
-
-//    If no headline , hide the toc
-    if ($('#toc').find('li').length === 0) {
-        $('#navbar-toc').hide();
-    }
-//    Scroll 150px show full header
-    if (isPostPage && !smallScreen) {
-        generateTOC();
-        setTimeout("scrollSpy()",300);
-        duoshuoInlineComment();
-
-        $('.scroller').scroll(function () {
-            if ((window.screen.width - 700)/2 > $('#trigger').parent().width() + $('#nexus-back').parent().width()){
-                if ($('li#navbar-title').width() + $('li#navbar-toc').width() > $('.post').width()) {
-                    $('li#navbar-title').hide();
-                } else {
-                    $('li#navbar-title').show();
-                }
-            } else {
-                $('li#navbar-title').hide();
-            }
-            var scroll2top = $('.scroller').scrollTop();
-            if (scroll2top > 150) {
-                $('.nexus').css('width', '100%');
-                $('.post-navbar').show(300);
-                $('#navbar-title a').show();
-
-            } else {
-                $('.post-navbar').hide(300);
-                $('.nexus').css('width', 'auto');
-            }
-        });
-    }
-//   lazy load DUOSHUO
-    var ds_loaded = false;
-    if (isPostPage) {
-        setTimeout(function(){
-            toggleDuoshuoComments('#comment-box');
-            ds_loaded = true;
-        }, 1000);
-    }
-//    Smooth Scroll for the TOC in header
-    $('#toc a').click(function (e) {
-        var headID = $(this).attr('href');
-        var headIDpos = $(headID).position().top;
-        $('.scroller').animate({ scrollTop: headIDpos + 200 }, 'linear');
-
-        e.preventDefault();
-    });
-
-//    Hover TOC navbar to show
-    $('#navbar-toc').hover(function () {
-        $('#navbar-toc i').removeClass('hover-down').addClass("hover-up");
-        $('.hidden-box').slideDown();
-    }, function () {
-        $('#navbar-toc i').removeClass('hover-up').addClass("hover-down");
-        $('.hidden-box').slideUp();
-    });
-
-
-
-
-//    Reset Header
-    if (isPostPage) {
-        var headTitle = $('h1.post-title').text();
-        $("#navbar-title a").text(headTitle);
-    } else {
-        $('.post-navbar').hide(300);
-        $('.nexus').css('width', 'auto');
-    }
-
-};
-//      PJAX init
-$(document).pjax('a[data-pjax]', '.container', { fragment: '.container', timeout: 10000 });
-$(document).on({
-    'pjax:click': function () {
-        $('.scroller').removeClass('fadeIn').addClass('fadeOut');
-        NProgress.start();
-    },
-    'pjax:start': function () {
-        $('.scroller').css('opacity','0');
-    },
-    'pjax:end': function () {
-        NProgress.done();
-        $('.scroller').css('opacity','1').removeClass('fadeOut').addClass('fadeIn');
-        afterPjax();
-        $('#navbar-toc').hide();
-        $('.nexus').css('width', 'auto');
-        $('#navbar-title a').hide();
-    },
-    'pjax:popstate': function () {
-        setTimeout("$('#toc').find('li').remove();",100);
-        setTimeout("generateTOC()",200);
-        setTimeout("$('#comment-box').children().remove();",100);
-    },
 });
-
-
-
-
-
