@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="generator" content="Hexo 4.2.0"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><meta name="keywords" content="[object Object]"><meta name="description" content="上一篇简单介绍了NIO，这一篇将介绍FileChannel结合Buffer的用法，主要介绍Buffer"><meta name="author" content="exceting"><title>Java NIO学习与记录（二）：FileChannel与Buffer用法与说明 - S</title><meta description="上一篇简单介绍了NIO，这一篇将介绍FileChannel结合Buffer的用法，主要介绍Buffer"><meta property="og:type" content="article"><meta property="og:title" content="Java NIO学习与记录（二）：FileChannel与Buffer用法与说明"><meta property="og:url" content="http://yoursite.com/2019/03/05/Java%20NIO%E5%AD%A6%E4%B9%A0%E4%B8%8E%E8%AE%B0%E5%BD%95%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AFileChannel%E4%B8%8EBuffer%E7%94%A8%E6%B3%95%E4%B8%8E%E8%AF%B4%E6%98%8E/"><meta property="og:site_name" content="S"><meta property="og:description" content="上一篇简单介绍了NIO，这一篇将介绍FileChannel结合Buffer的用法，主要介绍Buffer"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://myblog.sharemer.com/avatar.jpg"><meta property="article:published_time" content="2019-03-05T15:56:00.000Z"><meta property="article:modified_time" content="2020-04-28T16:24:56.720Z"><meta property="article:author" content="exceting"><meta property="article:tag" content="NIO"><meta property="article:tag" content="网络编程"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="http://myblog.sharemer.com/avatar.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://yoursite.com/2019/03/05/Java%20NIO%E5%AD%A6%E4%B9%A0%E4%B8%8E%E8%AE%B0%E5%BD%95%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AFileChannel%E4%B8%8EBuffer%E7%94%A8%E6%B3%95%E4%B8%8E%E8%AF%B4%E6%98%8E/"},"headline":"Java NIO学习与记录（二）：FileChannel与Buffer用法与说明","image":["http://myblog.sharemer.com/avatar.jpg"],"datePublished":"2019-03-05T15:56:00.000Z","dateModified":"2020-04-28T16:24:56.720Z","author":{"@type":"Person","name":"exceting"},"description":"上一篇简单介绍了NIO，这一篇将介绍FileChannel结合Buffer的用法，主要介绍Buffer"}</script><link rel="alternative" href="/atom.xml" title="S" type="application/atom+xml"><link rel="icon" href="/img/favicon.png"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/font-awesome/5.12.0/css/all.min.css"><link rel="stylesheet" href="https://fonts.loli.net/css?family=Ubuntu:400,600|Source+Code+Pro|Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Microsoft YaHei:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&amp;amp;subset=latin,latin-ext|Inconsolata|Itim|Lobster.css"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/lightgallery/1.6.12/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/justifiedGallery/3.7.0/css/justifiedGallery.min.css"><!--!--><!--!--><script src="https://cdnjs.loli.net/ajax/libs/pace/1.0.2/pace.min.js"></script><link rel="stylesheet" href="/css/style.css"><script src="https://cdnjs.loli.net/ajax/libs/jquery/3.3.1/jquery.min.js"></script><script src="/js/globalUtils.js"></script></head><body class="is-3-column has-navbar-fixed-top"><nav class="navbar navbar-main is-fixed-top"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="http://myblog.sharemer.com/logooo.png" alt="S" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">首页</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">标签</a><a class="navbar-item" href="/about">关于</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/exceting"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a><a class="navbar-item" id="night-nav" title="Night Mode" href="javascript:;"><i class="fas fa-moon" id="night-icon"></i></a></div></div></div></nav><script type="text/javascript" src="/js/theme-setting.js"></script><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta size-small is-uppercase level is-mobile"><div class="level-left"><i class="far fa-calendar-plus"> </i>2019-03-05  <a class="commentCountImg" href="/2019/03/05/Java%20NIO%E5%AD%A6%E4%B9%A0%E4%B8%8E%E8%AE%B0%E5%BD%95%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AFileChannel%E4%B8%8EBuffer%E7%94%A8%E6%B3%95%E4%B8%8E%E8%AF%B4%E6%98%8E/#comment-container"><span class="display-none-class">afd47188a93634cdad63f031ae77f934</span><i class="far fa-comment-dots"></i> <span class="commentCount" id="afd47188a93634cdad63f031ae77f934">99+</span>  </a><span class="level-item"><i class="far fa-clock"> </i>21 分钟  <i class="fas fa-pencil-alt"> </i>3.2k</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;&nbsp;<span id="busuanzi_value_page_pv">0</span>次访问</span></div></div><h1 class="title is-3 is-size-4-mobile">Java NIO学习与记录（二）：FileChannel与Buffer用法与说明</h1><div class="content"><blockquote>
+<p>上一篇简单介绍了<code>NIO</code>，这一篇将介绍<code>FileChannel</code>结合<code>Buffer</code>的用法，主要介绍<code>Buffer</code></p>
+</blockquote>
+<a id="more"></a>
+
+<h3 id="一、FileChannel例子"><a href="#一、FileChannel例子" class="headerlink" title="一、FileChannel例子"></a>一、FileChannel例子</h3><p>上一篇说到，这个<code>Channel</code>属于文件通道，专门读取文件信息，NIO读取文件内容的简单的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">readFile</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        RandomAccessFile file = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            file = <span class="keyword">new</span> RandomAccessFile(<span class="string">"D:\\rua.txt"</span>, <span class="string">"rw"</span>);</span><br><span class="line">            FileChannel fileChannel = file.getChannel(); <span class="comment">//获取文件通道</span></span><br><span class="line">            ByteBuffer buf = ByteBuffer.allocate(<span class="number">2</span>); <span class="comment">//分配容积为2字节的一块Buffer，用来读取数据</span></span><br><span class="line">            <span class="keyword">int</span> bytesRead = fileChannel.read(buf); <span class="comment">//从通道里读取数据到Buffer内（最大不超过Buffer容积）</span></span><br><span class="line">            <span class="keyword">while</span> (bytesRead != -<span class="number">1</span>) &#123; <span class="comment">//当读不到任何东西时返回-1</span></span><br><span class="line">                buf.flip(); <span class="comment">//切换到Buffer读模式，读模式下可以读取到之前写入Buffer的数据</span></span><br><span class="line">                <span class="keyword">while</span> (buf.hasRemaining()) &#123; <span class="comment">//循环输出Buffer中的数据</span></span><br><span class="line">                    System.out.print((<span class="keyword">char</span>) buf.get());</span><br><span class="line">                &#125;</span><br><span class="line">                buf.compact(); <span class="comment">//或者调用clear，切换回Buffer的写模式</span></span><br><span class="line">                bytesRead = fileChannel.read(buf); <span class="comment">//跟上面一样，再次从通道读取数据到Buffer中</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (file != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    file.close();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<center>代码块1</center>
+
+<p>rua.txt文件内容为：123456789 上述代码运行后输出如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">123456789</span><br></pre></td></tr></table></figure>
+
+<p>文件正常读取，可以结合上面的注释，来分析下过程，接下来要利用上面的例子介绍<code>Buffer</code>的一些概念。</p>
+<h3 id="二、Buffer的概念"><a href="#二、Buffer的概念" class="headerlink" title="二、Buffer的概念"></a>二、Buffer的概念</h3><h4 id="2-1：Buffer操作的步骤"><a href="#2-1：Buffer操作的步骤" class="headerlink" title="2.1：Buffer操作的步骤"></a>2.1：Buffer操作的步骤</h4><p>第一篇说过，<code>Buffer</code>是一个缓冲区，是一个容器，负责从通道读取数据或者写数据给通道，通过上面的例子，我们可以看到<code>Buffer</code>在读取通道数据时的几个步骤：</p>
+<p>step1：分配空间</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ByteBuffer.allocate(<span class="number">1024</span>); <span class="comment">//除此之外，还可以通过allocateDirector分配空间（具体不了解，先放一边，回头补）</span></span><br></pre></td></tr></table></figure>
+
+<center>代码块2</center>
+
+<p>step2：从通道读取数据，写入<code>Buffer</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> bytesRead = fileChannel.read(buf);</span><br></pre></td></tr></table></figure>
+
+<center>代码块3</center>
+
+<p>step3：读取<code>Buffer</code>内的内容，切换回<code>Buffer</code>读模式</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">buf.flip(); <span class="comment">//切换到Buffer读模式，读模式下可以读取到之前写入Buffer的数据</span></span><br></pre></td></tr></table></figure>
+
+<center>代码块4</center>
+
+<p>step4：循环执行读写操作，每取完一次<code>Buffer</code>中的值，都切换回写模式，再次从通道读取数据到<code>Buffer</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (bytesRead != -<span class="number">1</span>) &#123; <span class="comment">//当读不到任何东西时返回-1</span></span><br><span class="line">    buf.flip(); <span class="comment">//切换到Buffer读模式，读模式下可以读取到之前写入Buffer的数据</span></span><br><span class="line">    <span class="keyword">while</span> (buf.hasRemaining()) &#123; <span class="comment">//循环输出Buffer中的数据</span></span><br><span class="line">       System.out.print((<span class="keyword">char</span>) buf.get());</span><br><span class="line">    &#125;</span><br><span class="line">    buf.compact(); <span class="comment">//或者调用clear，切换回Buffer的写模式</span></span><br><span class="line">    bytesRead = fileChannel.read(buf); <span class="comment">//跟上面一样，再次从通道读取数据到Buffer中</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<center>代码块5</center>
+
+<h4 id="2-2：Buffer读写流程详解"><a href="#2-2：Buffer读写流程详解" class="headerlink" title="2.2：Buffer读写流程详解"></a>2.2：Buffer读写流程详解</h4><h5 id="2-2-1：重要属性的介绍"><a href="#2-2-1：重要属性的介绍" class="headerlink" title="2.2.1：重要属性的介绍"></a>2.2.1：重要属性的介绍</h5><p><code>Buffer</code>具备的几个重要概念：</p>
+<ul>
+<li><p><code>capacity</code>：缓冲区数组的总长度（容积）</p>
+</li>
+<li><p><code>position</code>：下一个需要操作的数据元素的位置</p>
+</li>
+<li><p><code>limit</code>：缓冲区不可操作的下一个元素的位置，<code>limit &lt;= capacity</code></p>
+</li>
+<li><p><code>mark</code>：用于记录<code>position</code>的前一个位置或默认是-1</p>
+</li>
+</ul>
+<h5 id="2-2-2：Buffer内部的操作流程"><a href="#2-2-2：Buffer内部的操作流程" class="headerlink" title="2.2.2：Buffer内部的操作流程"></a>2.2.2：Buffer内部的操作流程</h5><p>结合上面的概念，除了<code>mark</code>（再往下介绍），其余几个指标的操作变化如下图：</p>
+<p>初始化一个容积为10的<code>Buffer</code>，初识位置<code>limit = capacity</code>，<code>position</code>位于第一个位置</p>
+<p><img src="http://myblog.sharemer.com/2019/03/05/20190305-1-1.png?imageView2/0/w/1024" alt="图1" title="图1"></p>
+<p>当容器内写入了5个数据元素之后，<code>position</code>的位置变到了第6个位置，标记当前写入到哪里了</p>
+<p><img src="http://myblog.sharemer.com/2019/03/05/20190305-1-2.png?imageView2/0/w/1024" alt="图2" title="图2"></p>
+<p>这时候不再写入数据了，开始切换回<code>Buffer</code>的读模式（flip），发生的变化如下：</p>
+<p><img src="http://myblog.sharemer.com/2019/03/05/20190305-1-3.png?imageView2/0/w/1024" alt="图3" title="图3"></p>
+<p>发现，原先读模式下的<code>position</code>的位置被<code>limit</code>替换掉了，而<code>position</code>被重置为了第一个位置，这是因为现在读模式下想要读取之前写入的内容，为了保证读取的数据都是可读的（之前写入的），就需要有一个标记，来记录之前写模式下，操作到哪里了，<code>position</code>被重置为第一个位置，也很容易理解，因为切换了读模式，从头开始读取已写入的数据。</p>
+<p>通过上面的描述，我们清楚了<code>buffer</code>是如何利用<code>position</code>、<code>limit</code>、<code>capacity</code>来完成读写操作的，下面我们来介绍下具体读写操作时<code>Bufer</code>发生的操作：</p>
+<p>Buffer切换读模式的方法有：<code>flip</code></p>
+<p>Buffer切换写模式的方法有：<code>clear、compact</code></p>
+<p>Buffer读数据：<code>get</code></p>
+<hr>
+<p>使用<code>clear</code>切换回<code>写模式</code>的时候，<code>position</code>会被置为0（也就是最初的位置），<code>limit</code>置为<code>capacity</code>（也就是最后的位置），意味着切换写模式之前未读的数据，将会被新一轮的写入覆盖，就再也找不回来了，所以除<code>clear</code>这个操作，Buffer还提供了<code>compact</code>方法来切换<code>读模式</code>，这个方法会把所有未读的数据拷贝到Buffer的起始位置，然后<code>position</code>指向最后一个未读数据的后一位，这样，下次开启读模式的时候，<code>position</code>操作同上，置为0，因此之前未读完被落下的数据也就在这时候被读到了。</p>
+<p>下面我们来还原下这个转换过程：</p>
+<p><img src="http://myblog.sharemer.com/2019/03/05/20190305-1-4.png?imageView2/0/w/1024" alt="图4" title="图4"></p>
+<p>走到上面的步骤后，我们切换成写模式，下面这个图分别表示了<code>clear</code>和<code>compact</code>两个方法下的两种操作：</p>
+<p><img src="http://myblog.sharemer.com/2019/03/05/20190305-1-5.png?imageView2/0/w/1024" alt="图5" title="图5"></p>
+<p>根据<code>图4</code>和<code>图5</code>，结合上面的话，更容易理解<code>clear</code>和<code>compact</code>两种方式切换写模式所做的内部操作，以及为什么<code>clear</code>会丢数据，而<code>compact</code>不会。</p>
+<p>下面通过一开始的例子，把中间读取数据的地方稍微做下修改：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">ByteBuffer buf = ByteBuffer.allocate(<span class="number">2</span>);</span><br><span class="line"><span class="keyword">int</span> bytesRead = readChannel.read(buf);</span><br><span class="line"><span class="keyword">while</span> (bytesRead != -<span class="number">1</span>) &#123;</span><br><span class="line">   buf.flip();</span><br><span class="line">   <span class="keyword">char</span> result = (<span class="keyword">char</span>) buf.get(); <span class="comment">//虽然读进来了2个字节，但这里只取一个</span></span><br><span class="line">   System.out.print(result);</span><br><span class="line">   buf.clear(); <span class="comment">// 使用clear切换回Buffer的写模式</span></span><br><span class="line">   bytesRead = readChannel.read(buf);</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(<span class="string">"-----------程序结束"</span>);</span><br></pre></td></tr></table></figure>
+
+<center>代码块6</center>
+
+<p>输出结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">13579-----------程序结束</span><br></pre></td></tr></table></figure>
+
+<p>发现丢了一些数据，现在把<code>clear</code>改成<code>compact</code>，运行结果为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">12345678-----------程序结束</span><br></pre></td></tr></table></figure>
+
+<p>发现，除了9，都输出来了（至于9为啥没输出，因为每次只取了一个字节的数据呀~）</p>
+<p>那么，如果切换到<code>读模式</code>，但是不读，然后切换回<code>写模式</code>继续写，会发生什么？</p>
+<p>改造上述代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">ByteBuffer buf = ByteBuffer.allocate(<span class="number">2</span>);</span><br><span class="line"><span class="keyword">int</span> bytesRead = readChannel.read(buf);</span><br><span class="line"><span class="keyword">while</span> (bytesRead != -<span class="number">1</span>) &#123;</span><br><span class="line">   buf.flip();</span><br><span class="line">   buf.clear(); <span class="comment">// 不读，立刻切回写模式</span></span><br><span class="line">   bytesRead = readChannel.read(buf);</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(<span class="string">"-----------程序结束"</span>);</span><br></pre></td></tr></table></figure>
+
+<center>代码块7</center>
+
+<p>调用clear的情况下输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-----------程序结束</span><br></pre></td></tr></table></figure>
+
+<p>而调用<code>compact</code>方法，却发生阻塞(死循环)了，结合之前的图，我们可以知道，如果不读，意味着在<code>compact</code>下会把未读的数据<code>copy</code>到Buffer里，如果一点都不读，那么意味着被<code>copy</code>的这批数据会占满整个Buffer，以至于<code>position</code>没有下一个位置可用，就会发生文件里的数据没办法被安排进缓冲区（意味着文件读不完），<code>bytesRead</code>一直不等于-1，发生死循环。</p>
+<p>通过上面的图和例子，基本上可以理清楚<code>读模式</code>、<code>写模式</code>（包含不同的切换方式）下的Buffer内部处理方式。</p>
+<h4 id="2-3：Buffer的其他操作"><a href="#2-3：Buffer的其他操作" class="headerlink" title="2.3：Buffer的其他操作"></a>2.3：Buffer的其他操作</h4><p>除了上面几种常规用法，Buffer还提供了其他的几个操作方法</p>
+<h5 id="2-3-1：rewind"><a href="#2-3-1：rewind" class="headerlink" title="2.3.1：rewind"></a>2.3.1：rewind</h5><p>这个方法可以在读模式下，<code>重置position的位置</code>，也就是说在get执行后。<code>position</code>发生了位移，这个方法可以重置<code>position</code>的位置为初始位置，看例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">ByteBuffer buf = ByteBuffer.allocate(<span class="number">2</span>); <span class="comment">//每次可读入两个字节</span></span><br><span class="line"><span class="keyword">int</span> bytesRead = readChannel.read(buf);</span><br><span class="line"><span class="keyword">while</span> (bytesRead != -<span class="number">1</span>) &#123;</span><br><span class="line">                buf.flip();</span><br><span class="line">                System.out.print((<span class="keyword">char</span>) buf.get());</span><br><span class="line">                buf.rewind(); <span class="comment">//重置position</span></span><br><span class="line">                System.out.print((<span class="keyword">char</span>) buf.get());<span class="comment">//这时候读到的数据跟上面是同一个</span></span><br><span class="line">                buf.clear();</span><br><span class="line">                bytesRead = readChannel.read(buf);</span><br><span class="line">            &#125;</span><br></pre></td></tr></table></figure>
+
+<center>代码块8</center>
+
+<p>运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1133557799</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，每次循环拿到两个字节，但两次获取的数据都是同一个，因为<code>rewind</code>把读取游标<code>重置</code>成初始位置了（也即是位置0）</p>
+<article class="message is-warning"><div class="message-body">
+<p>⭐️ 这里说下，如果把上面的第二个<code>get方法</code>去掉，然后把<code>clear模式</code>改成<code>compact模式</code>同样也会发生死循环，因为<code>rewind</code>重置了游标，重置后又没有<code>get方法</code>再次读取，导致把本次的两个字节又复制进了Buffer，跟之前说的不读一样，会导致Buffer没有多余的空间放文件里的数据，导致一直读不完，发生死循环。</p>
+</div></article>
+
+<h5 id="2-3-2：mark-amp-reset"><a href="#2-3-2：mark-amp-reset" class="headerlink" title="2.3.2：mark &amp; reset"></a>2.3.2：mark &amp; reset</h5><p>这两个方法放到一起说，因为mark跟reset不放在一起使用，没有任何意义。</p>
+<ul>
+<li><p><code>mark</code>：用于标记当前<code>position</code>的位置</p>
+</li>
+<li><p><code>reset</code>：用于恢复被<code>mark</code>标记的<code>position</code>的位置</p>
+</li>
+</ul>
+<p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">ByteBuffer buf = ByteBuffer.allocate(<span class="number">2</span>);</span><br><span class="line"><span class="keyword">int</span> bytesRead = readChannel.read(buf);</span><br><span class="line"><span class="keyword">while</span> (bytesRead != -<span class="number">1</span>) &#123;</span><br><span class="line">    buf.flip();</span><br><span class="line">    buf.mark(); <span class="comment">//标记当前位置，这里也就是初始位置</span></span><br><span class="line">    System.out.print((<span class="keyword">char</span>) buf.get()); <span class="comment">//读取到了初识位置数据</span></span><br><span class="line">    buf.reset(); <span class="comment">//重置position到mark标记时那个值</span></span><br><span class="line">    System.out.print((<span class="keyword">char</span>) buf.get()); <span class="comment">//这里由于被reset了，因此输出的还是初识位置的数据</span></span><br><span class="line">    buf.clear();</span><br><span class="line">    bytesRead = readChannel.read(buf);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<center>代码块9</center>
+
+<p>输出结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1133557799</span><br></pre></td></tr></table></figure>
+
+<p>会发现，上下两个打印都是是一样的数据。嘛，还是跟上面一样，再回顾一下，这里如果用<code>compact</code>会怎么操作？如果使用<code>compact</code>会打印如下语句：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1122334455667788</span><br></pre></td></tr></table></figure>
+
+<p>这个现在也很好理解了，因为重置了位置所以每个数据被打印了两次，由于<code>mark</code>的原因，每次实际上相当于只读了一个数据，所以剩下的一个数据被顺延到下次循环里打印，以此类推。</p>
+<h5 id="2-3-3：equals-amp-compareTo"><a href="#2-3-3：equals-amp-compareTo" class="headerlink" title="2.3.3：equals &amp; compareTo"></a>2.3.3：equals &amp; compareTo</h5><ul>
+<li><p><code>equals</code>：用来比较两个Buffer是否相等，判等条件为</p>
+<ol>
+<li>类型相同（byte、char等）</li>
+<li>剩余元素个数相等</li>
+<li>剩余元素相同</li>
+</ol>
+</li>
+<li><p>compareTo：比较两个Buffer中剩余元素的大小，如果满足如下条件，则认为buffer1小于buffer2：</p>
+<ol>
+<li>buffer1中第一个与buffer2不相等的元素小于buffer2的那个元素</li>
+<li>所有元素相同，但是buffer1先比buffer2耗尽</li>
+</ol>
+</li>
+</ul>
+<h3 id="三、实例：边读边写"><a href="#三、实例：边读边写" class="headerlink" title="三、实例：边读边写"></a>三、实例：边读边写</h3><p>例子：将rua.txt里的内容在读的同时写入文件haha.txt里</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">readFile = <span class="keyword">new</span> RandomAccessFile(<span class="string">"D:\\rua.txt"</span>, <span class="string">"r"</span>);</span><br><span class="line">writeFile = <span class="keyword">new</span> RandomAccessFile(<span class="string">"D:\\haha.txt"</span>, <span class="string">"rw"</span>);</span><br><span class="line">FileChannel readChannel = readFile.getChannel(); <span class="comment">//获取只读文件通道</span></span><br><span class="line">FileChannel writeChannel = writeFile.getChannel(); <span class="comment">//获取写文件通道</span></span><br><span class="line"></span><br><span class="line">ByteBuffer readBuf = ByteBuffer.allocate(<span class="number">2</span>); <span class="comment">//分配容积为2字节的一块Buffer，用来读取数据</span></span><br><span class="line"><span class="keyword">int</span> bytesRead = readChannel.read(readBuf); <span class="comment">//从通道里读取数据到Buffer内（最大不超过Buffer容积）</span></span><br><span class="line"><span class="keyword">while</span> (bytesRead != -<span class="number">1</span>) &#123; <span class="comment">//当读不到任何东西时返回-1</span></span><br><span class="line">    readBuf.flip(); <span class="comment">//切换到Buffer读模式，读模式下可以读取到之前写入Buffer的数据</span></span><br><span class="line">    writeChannel.write(readBuf); <span class="comment">//将现在的buffer里的数据写到文件haha.txt里</span></span><br><span class="line">    readBuf.compact(); <span class="comment">// 切换回Buffer的写模式</span></span><br><span class="line">    bytesRead = readChannel.read(readBuf); <span class="comment">//跟上面一样，再次从通道读取数据到Buffer中</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<center>代码块10</center>
+
+<p>结果haha.txt里的内容为：123456789</p>
+<h3 id="四、Buffer的分类"><a href="#四、Buffer的分类" class="headerlink" title="四、Buffer的分类"></a>四、Buffer的分类</h3><table>
+<thead>
+<tr>
+<th>类别</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ByteBuffer</td>
+<td>支持存放字节类型数据，抽象类，有<code>DirectByteBuffer</code>、<code>HeapByteBuffer</code>、<code>MappedByteBuffer</code>两个子类，下面进行说明</td>
+</tr>
+<tr>
+<td>CharBuffer</td>
+<td>支持存放char类型数据</td>
+</tr>
+<tr>
+<td>DoubleBuffer</td>
+<td>支持存放double类型数据</td>
+</tr>
+<tr>
+<td>FloatBuffer</td>
+<td>支持存放float类型数据</td>
+</tr>
+<tr>
+<td>IntBuffer</td>
+<td>支持存放int类型数据</td>
+</tr>
+<tr>
+<td>LongBuffer</td>
+<td>支持存放long类型数据</td>
+</tr>
+<tr>
+<td>ShortBuffer</td>
+<td>支持存放short类型数据</td>
+</tr>
+</tbody></table>
+<center>表1</center>
+
+<p>通过上表可以看到，Buffer有很多实现，其中大部分都对应一种基本类型，<code>ByteBuffer</code>比较特殊，下面介绍下它的两个子类。</p>
+<p><code>ByteBuffer</code>—-&gt;<code>HeapByteBuffer</code></p>
+<p>直接通过byte数组实现的在java堆上的缓冲区。</p>
+<p><code>ByteBuffer</code>—-&gt;<code>DirectByteBuffer</code></p>
+<p>直接在java<code>堆外</code>申请的一块内存，将文件映射到该内存空间，在大文件读写方面的效率非常高。</p>
+<p><code>ByteBuffer</code>—–&gt;<code>MappedByteBuffer</code></p>
+<p>同样写效率非常高。</p>
+<p>关于这几个Buffer后续会专门整理一篇文章来写。</p>
+</div><ul class="post-copyright"><li><strong>本文标题：</strong><a href="http://yoursite.com/2019/03/05/Java NIO学习与记录（二）：FileChannel与Buffer用法与说明/">Java NIO学习与记录（二）：FileChannel与Buffer用法与说明</a></li><li><strong>本文作者：</strong><a href="http://yoursite.com">S</a></li><li><strong>本文链接：</strong><a href="http://yoursite.com/2019/03/05/Java NIO学习与记录（二）：FileChannel与Buffer用法与说明/">http://yoursite.com/2019/03/05/Java NIO学习与记录（二）：FileChannel与Buffer用法与说明/</a></li><li><strong>版权声明：</strong><span>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</span></li></ul><div><div class="recommend-post"><span class="is-size-6 has-text-grey has-mr-7"># 相关文章</span><br><span>  1.<a class="is-size-6" href="/2019/03/27/Java%20NIO%E5%AD%A6%E4%B9%A0%E4%B8%8E%E8%AE%B0%E5%BD%95%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9A%20Reactor%E5%8D%95%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AE%9E%E7%8E%B0/" target="_blank">Java NIO学习与记录（七）： Reactor单线程模型的实现</a><br></span><span>  2.<a class="is-size-6" href="/2019/03/20/Java%20NIO%E5%AD%A6%E4%B9%A0%E4%B8%8E%E8%AE%B0%E5%BD%95%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9A%20NIO%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/" target="_blank">Java NIO学习与记录（六）： NIO线程模型</a><br></span><span>  3.<a class="is-size-6" href="/2019/03/19/Java%20NIO%E5%AD%A6%E4%B9%A0%E4%B8%8E%E8%AE%B0%E5%BD%95%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%20%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84IO%E6%A8%A1%E5%9E%8B/" target="_blank">Java NIO学习与记录（五）： 操作系统的I/O模型</a><br></span><span>  4.<a class="is-size-6" href="/2019/03/08/Java%20NIO%E5%AD%A6%E4%B9%A0%E4%B8%8E%E8%AE%B0%E5%BD%95%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%20SocketChannel%E4%B8%8EBIO%E6%9C%8D%E5%8A%A1%E5%99%A8/" target="_blank">Java NIO学习与记录（四）： SocketChannel与BIO服务器</a><br></span><span>  5.<a class="is-size-6" href="/2019/03/07/Java%20NIO%E5%AD%A6%E4%B9%A0%E4%B8%8E%E8%AE%B0%E5%BD%95%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%20Scatter&amp;Gather%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/" target="_blank">Java NIO学习与记录（三）： Scatter&amp;Gather介绍及使用</a><br></span></div></div><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/social-share.js/1.0.16/css/share.min.css"><div class="social-share"></div><script src="https://cdnjs.loli.net/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button is-info donate"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="http://myblog.sharemer.com/alipay_qrcode.png" alt="支付宝"></span></a><a class="button is-success donate"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="http://myblog.sharemer.com/wx_qrcode.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2019/03/07/Java%20NIO%E5%AD%A6%E4%B9%A0%E4%B8%8E%E8%AE%B0%E5%BD%95%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%20Scatter&amp;Gather%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">Java NIO学习与记录（三）： Scatter&amp;Gather介绍及使用</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2019/02/27/%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F&amp;%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F-%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%8C%BA%E5%88%AB/"><span class="level-item">简单工厂模式&amp;策略模式-简介与区别</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">评论</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/gitalk/1.6.0/gitalk.css"><script> $.getScript('/js/gitalk.min.js', function () { 
+            var gitalk = new Gitalk({
+            id: 'afd47188a93634cdad63f031ae77f934',
+            repo: 'exceting.github.io',
+            owner: 'exceting',
+            clientID: '17297b562584b5cec3d7',
+            clientSecret: '46c7652ed4f09fb1d847d15df81500a5a2ceeae8',
+            admin: ["exceting"],
+            createIssueManually: true,
+            distractionFreeMode: false,
+            perPage: 10,
+            pagerDirection: 'last',
+            
+            
+            enableHotKey: true,
+            isLocked: false
+        })
+        gitalk.render('comment-container')});</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1 is-sticky"><div class="card widget toc-scroll" id="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list toc"><li><a class="is-flex toc-item" id="toc-item-一、FileChannel例子" href="#一、FileChannel例子"><span>一、FileChannel例子</span></a></li><li><a class="is-flex toc-item" id="toc-item-二、Buffer的概念" href="#二、Buffer的概念"><span>二、Buffer的概念</span></a><ul class="menu-list toc"><li><a class="is-flex toc-item" id="toc-item-2-1：Buffer操作的步骤" href="#2-1：Buffer操作的步骤"><span>2.1：Buffer操作的步骤</span></a></li><li><a class="is-flex toc-item" id="toc-item-2-2：Buffer读写流程详解" href="#2-2：Buffer读写流程详解"><span>2.2：Buffer读写流程详解</span></a><ul class="menu-list toc"><li><a class="is-flex toc-item" id="toc-item-2-2-1：重要属性的介绍" href="#2-2-1：重要属性的介绍"><span>2.2.1：重要属性的介绍</span></a></li><li><a class="is-flex toc-item" id="toc-item-2-2-2：Buffer内部的操作流程" href="#2-2-2：Buffer内部的操作流程"><span>2.2.2：Buffer内部的操作流程</span></a></li></ul></li><li><a class="is-flex toc-item" id="toc-item-2-3：Buffer的其他操作" href="#2-3：Buffer的其他操作"><span>2.3：Buffer的其他操作</span></a><ul class="menu-list toc"><li><a class="is-flex toc-item" id="toc-item-2-3-1：rewind" href="#2-3-1：rewind"><span>2.3.1：rewind</span></a></li><li><a class="is-flex toc-item" id="toc-item-2-3-2：mark-amp-reset" href="#2-3-2：mark-amp-reset"><span>2.3.2：mark &amp;amp; reset</span></a></li><li><a class="is-flex toc-item" id="toc-item-2-3-3：equals-amp-compareTo" href="#2-3-3：equals-amp-compareTo"><span>2.3.3：equals &amp;amp; compareTo</span></a></li></ul></li></ul></li><li><a class="is-flex toc-item" id="toc-item-三、实例：边读边写" href="#三、实例：边读边写"><span>三、实例：边读边写</span></a></li><li><a class="is-flex toc-item" id="toc-item-四、Buffer的分类" href="#四、Buffer的分类"><span>四、Buffer的分类</span></a></li></ul></div></div><script type="text/javascript" async>
+        $(document).ready(function () { //参考自 https://github.com/ppoffice/hexo-theme-icarus/pull/616/files
+            var observerTopMargin;
+            var scrollObserver;
+            var headerElems = $(".headerlink");
+            var activeTocItem;
+        
+            function initIntersectionObserver(docHeight) {
+                observerTopMargin = docHeight;
+                scrollObserver = new IntersectionObserver(scrollCallBack,
+                    {
+                        root: null,  // viewpoint
+                        rootMargin: docHeight + "px 0px -80% 0px"  // cover top 30% of viewport to the top of document
+                    })
+            }
+        
+            function scrollCallBack(entries, observer) {
+                if ($(window).scrollTop() > observerTopMargin * 0.7) { 
+                    // User somehow scroll to 70% of observerTopMargin (which is inited as 200% document height)
+                    // Observer top margin need to extend to cover all the space to the top of the document
+                    initIntersectionObserver(observerTopMargin * 2)
+                    observer.disconnect();
+                    return;
+                }
+                let toActive;
+                if (entries[0].intersectionRatio == 1) {  // enter viewed area
+                    let entry = entries.reduce((u, v) => (u.target.toc_id > v.target.toc_id ? u : v));  // get the lowest item
+                    toActive = $("#toc-item-" + $(entry.target).attr("href").substr(1));
+                } else {
+                    let entry = entries.reduce((u, v) => (u.target.toc_id < v.target.toc_id ? u : v));  // get the highest item
+                    let idx = Math.max(entry.target.toc_id - 1, 0);
+                    toActive = $("#toc-item-" + $(headerElems[idx]).attr("href").substr(1));
+                }
+                if (activeTocItem) activeTocItem.removeClass("is-current");
+                activeTocItem = toActive
+                activeTocItem.addClass("is-current");
+            }
+        
+            initIntersectionObserver($(document).height() * 2);
+            headerElems.each(function (index, obj) {
+                obj.toc_id = index;
+                scrollObserver.observe(obj);
+            })
+        });</script></div><div class="card widget"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="" src="http://myblog.sharemer.com/avatar.jpg" alt="S"></figure><p class="title is-size-4 is-block line-height-inherit">S</p><p class="is-size-6 is-block">随机和因果，命运与无常，兼而有之</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>上海</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">26</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">27</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">34</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/exceting" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile"><a class="level-item button is-transparent is-white is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/exceting"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-white is-marginless" target="_blank" rel="noopener" title="Bilibili" href="https://www.bilibili.com"><i class="fab fa-bilibili"></i></a><a class="level-item button is-transparent is-white is-marginless" target="_blank" rel="noopener" title="Email" href="mailto:1807301715@qq.com"><i class="fa fa-envelope"></i></a><a class="level-item button is-transparent is-white is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget"><div class="card-content"><h3 class="menu-label">最新评论</h3><span class="body_hot_comment">加载中，最新评论有1分钟缓存...</span></div></div><div class="card widget"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content size-small"><p><time dateTime="2019-03-27T13:59:00.000Z">2019-03-27</time></p><p class="title is-6"><a class="link-muted" href="/2019/03/27/Java%20NIO%E5%AD%A6%E4%B9%A0%E4%B8%8E%E8%AE%B0%E5%BD%95%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9A%20Reactor%E5%8D%95%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AE%9E%E7%8E%B0/">Java NIO学习与记录（七）： Reactor单线程模型的实现</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/">网络编程</a> / <a class="link-muted" href="/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/NIO/">NIO</a> / <a class="link-muted" href="/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/NIO/NIO%E5%9F%BA%E7%A1%80/">NIO基础</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2019-03-23T15:24:00.000Z">2019-03-23</time></p><p class="title is-6"><a class="link-muted" href="/2019/03/23/%E9%A1%BE%E6%9D%91%E7%9A%84%E6%A8%B1%E8%8A%B1-20190323/">顾村的樱花-20190323</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/%E6%97%A5%E5%B8%B8/">日常</a> / <a class="link-muted" href="/categories/%E6%97%A5%E5%B8%B8/%E6%97%85%E8%A1%8C/">旅行</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2019-03-22T11:42:00.000Z">2019-03-22</time></p><p class="title is-6"><a class="link-muted" href="/2019/03/22/java%E6%80%A7%E8%83%BD%E7%81%AB%E7%84%B0%E5%9B%BE%E7%9A%84%E7%94%9F%E6%88%90/">java性能火焰图的生成</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/">服务治理</a> / <a class="link-muted" href="/categories/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/%E7%81%AB%E7%84%B0%E5%9B%BE/">火焰图</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2019-03-22T07:56:00.000Z">2019-03-22</time></p><p class="title is-6"><a class="link-muted" href="/2019/03/22/%E3%80%90%E6%9D%82%E8%AE%B0%E3%80%91linux%E4%B8%8B%E5%90%84%E7%A7%8D%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85%E6%96%B9%E6%B3%95%EF%BC%88%E6%8C%81%E7%BB%AD%E8%AE%B0%E5%BD%95%EF%BC%89/">【杂记】linux下各种软件安装方法（持续记录）</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2019-03-20T15:12:00.000Z">2019-03-20</time></p><p class="title is-6"><a class="link-muted" href="/2019/03/20/Java%20NIO%E5%AD%A6%E4%B9%A0%E4%B8%8E%E8%AE%B0%E5%BD%95%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9A%20NIO%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/">Java NIO学习与记录（六）： NIO线程模型</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/">网络编程</a> / <a class="link-muted" href="/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/NIO/">NIO</a> / <a class="link-muted" href="/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/NIO/NIO%E5%9F%BA%E7%A1%80/">NIO基础</a></p></div></article></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile is-marginless" href="/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"><span class="level-start"><span class="level-item">并发编程</span></span><span class="level-end"><span class="level-item tag">7</span></span></a><ul class="mr-0"><li><a class="level is-mobile is-marginless" href="/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/ThreadLocal/"><span class="level-start"><span class="level-item">ThreadLocal</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/juc/"><span class="level-start"><span class="level-item">juc</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/%E5%9B%BE%E8%A7%A3%E5%A4%9A%E7%BA%BF%E7%A8%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"><span class="level-start"><span class="level-item">图解多线程设计模式</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li></ul></li><li><a class="level is-mobile is-marginless" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"><span class="level-start"><span class="level-item">数据库</span></span><span class="level-end"><span class="level-item tag">2</span></span></a><ul class="mr-0"><li><a class="level is-mobile is-marginless" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/NoSQL/"><span class="level-start"><span class="level-item">NoSQL</span></span><span class="level-end"><span class="level-item tag">1</span></span></a><ul class="mr-0"><li><a class="level is-mobile is-marginless" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/NoSQL/redis/"><span class="level-start"><span class="level-item">redis</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li></ul></li><li><a class="level is-mobile is-marginless" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93/"><span class="level-start"><span class="level-item">关系型数据库</span></span><span class="level-end"><span class="level-item tag">1</span></span></a><ul class="mr-0"><li><a class="level is-mobile is-marginless" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93/mysql/"><span class="level-start"><span class="level-item">mysql</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile is-marginless" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"><span class="level-start"><span class="level-item">数据结构</span></span><span class="level-end"><span class="level-item tag">3</span></span></a><ul class="mr-0"></ul></li><a class="level is-mobile is-marginless" href="/categories/"><span class="level-start"><span class="level-item">查看全部&gt;&gt;</span></span></a></ul></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile is-marginless" href="/archives/2019/03/"><span class="level-start"><span class="level-item">三月 2019</span></span><span class="level-end"><span class="level-item tag">12</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2019/02/"><span class="level-start"><span class="level-item">二月 2019</span></span><span class="level-end"><span class="level-item tag">8</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2017/08/"><span class="level-start"><span class="level-item">八月 2017</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2017/04/"><span class="level-start"><span class="level-item">四月 2017</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2016/04/"><span class="level-start"><span class="level-item">四月 2016</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><a class="level is-mobile is-marginless" href="/archives/"><span class="level-start"><span class="level-item">查看全部&gt;&gt;</span></span></a></ul></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/NIO/"><span class="tag">NIO</span><span class="tag is-grey-lightest">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"><span class="tag">网络编程</span><span class="tag is-grey-lightest">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"><span class="tag">并发编程</span><span class="tag is-grey-lightest">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ThreadLocal/"><span class="tag">ThreadLocal</span><span class="tag is-grey-lightest">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/juc/"><span class="tag">juc</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/"><span class="tag">多线程</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"><span class="tag">数据库</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"><span class="tag">数据结构</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"><span class="tag">设计模式</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/CompletableFuture/"><span class="tag">CompletableFuture</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ReentrantLock/"><span class="tag">ReentrantLock</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/aop/"><span class="tag">aop</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ioc/"><span class="tag">ioc</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/letter-song/"><span class="tag">letter song</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/map/"><span class="tag">map</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/miku/"><span class="tag">miku</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/mysql/"><span class="tag">mysql</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/nosql/"><span class="tag">nosql</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/redis/"><span class="tag">redis</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/spring/"><span class="tag">spring</span><span class="tag is-grey-lightest">1</span></a></div></div><div class="field is-grouped is-grouped-multiline"><a class="tags has-addons" href="/tags/"><span class="tag">查看全部&gt;&gt;</span></a></div></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">订阅更新</h3><form action="https://feedburner.google.com/fb/a/mailverify" method="post" target="popupwindow" onsubmit="window.open(&#039;https://feedburner.google.com/fb/a/mailverify?uri=removeifFeedsId&#039;,&#039;popupwindow&#039;,&#039;scrollbars=yes,width=550,height=520&#039;);return true"><input type="hidden" value="removeifFeedsId" name="uri"><input type="hidden" name="loc" value="en_US"><div class="field has-addons"><div class="control has-icons-left is-expanded"><input class="input" name="email" type="email" placeholder="Email"><span class="icon is-small is-left"><i class="fas fa-envelope"></i></span></div><div class="control"><input class="button is-primary" type="submit" value="订阅"></div></div><p class="help">输入邮箱开始订阅，更博后邮件通知！</p></form></div></div></div></div></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="http://myblog.sharemer.com/logooo.png" alt="S" height="28"></a><p class="size-small"><span>&copy; 2020 S</span>  Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>,Modify by <a href="https://github.com/removeif/hexo-theme-amazing" target="_blank">removeif</a> <br><span>© 版权说明：[本站所有内容均收集于互联网或自己创作，方便于本人记录和学习，如有侵权，请<a href="/message" target="_blank">留言</a>，我会立即处理]<br /></span><span><span id="statistic-times">loading...</span><script>function createTime(time) {
+            var n = new Date(time);
+            now.setTime(now.getTime() + 250),
+                days = (now - n) / 1e3 / 60 / 60 / 24,
+                dnum = Math.floor(days),
+                hours = (now - n) / 1e3 / 60 / 60 - 24 * dnum,
+                hnum = Math.floor(hours),
+            1 == String(hnum).length && (hnum = "0" + hnum),
+                minutes = (now - n) / 1e3 / 60 - 1440 * dnum - 60 * hnum,
+                mnum = Math.floor(minutes),
+            1 == String(mnum).length && (mnum = "0" + mnum),
+                seconds = (now - n) / 1e3 - 86400 * dnum - 3600 * hnum - 60 * mnum,
+                snum = Math.round(seconds),
+            1 == String(snum).length && (snum = "0" + snum),
+                document.getElementById("statistic-times").innerHTML = "❤️本站自 <strong>"+time.split(" ")[0].replace(/\//g,".")+"</strong> 已运行 <strong>" + dnum + "</strong> 天 <strong>" + hnum + "</strong> 小时 <strong>" + mnum + "</strong> 分 <strong>" + snum + "</strong> 秒！❤️";
+        }var now = new Date();setInterval("createTime('2018/12/29 00:00:00')", 250,"");</script><br></span><div class="size-small"><span>❤️感谢 <strong><span id="busuanzi_value_site_uv">99+</span></strong> 小伙伴的 <strong><span id="busuanzi_value_site_pv">99+</span></strong> 次光临！❤️</span></div></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/exceting"><i class="fab fa-github"></i></a></p></div><div class="sideMusic"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="/js/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script><meting-js style="width: auto;height: 2000px;" server="netease" type="playlist" id="2755914162" theme="#2980b9" loop="all" autoplay="false" order="list" storageName="aplayer-setting" lrctype="0" list-max-height="400px" fixed="true"></meting-js></div></div></div></div></footer><script src="https://cdnjs.loli.net/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            site: {
+                url: 'http://yoursite.com',
+                external_link: {"enable":true,"exclude":[]}
+            },
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="https://cdnjs.loli.net/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" defer></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back-to-top.js" defer></script><!--!--><!--!--><script src="https://cdnjs.loli.net/ajax/libs/lightgallery/1.6.12/js/lightgallery-all.min.js" defer></script><script src="https://cdnjs.loli.net/ajax/libs/justifiedGallery/3.7.0/js/jquery.justifiedGallery.min.js" defer></script><!--!--><!--!--><!--!--><script src="/js/toc.js" defer></script><script src="/js/main.js" defer></script><script>$.getScript('/js/comment-issue-data.js',function(){loadIssueData('17297b562584b5cec3d7','46c7652ed4f09fb1d847d15df81500a5a2ceeae8','exceting','exceting.github.io',false);})</script><link rel="stylesheet" href="/css/insight.css"><div class="searchbox ins-search"><div class="searchbox-container ins-search-container"><div class="searchbox-input-wrapper"><input class="searchbox-input ins-search-input" type="text" placeholder="想要查找什么..."><span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span></div><div class="searchbox-result-wrapper ins-section-wrapper"><div class="ins-section-container"></div></div></div></div><script>(function (window) {
+            var INSIGHT_CONFIG = {
+                TRANSLATION: {
+                    POSTS: '文章',
+                    PAGES: '页面',
+                    CATEGORIES: '分类',
+                    TAGS: '标签',
+                    UNTITLED: '(无标题)',
+                },
+                CONTENT_URL: '/content.json',
+            };
+            window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+        })(window);</script><script src="/js/insight.js" defer></script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.js"></script><script type="text/javascript">var pjax = new Pjax({
+            elements: "a",//代表点击链接就更新
+            selectors: [  //代表要更新的节点
+                ".section",
+                "title"
+            ],
+            cache: true,
+            cacheBust:false
+        })
+
+        function loadBusuanzi(){
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js", function () {});
+        }
+
+        // 开始 PJAX 执行的函数
+        document.addEventListener('pjax:send', function () {
+        });
+        
+        // PJAX 完成之后执行的函数，可以和上面的重载放在一起
+        document.addEventListener('pjax:complete', function () {
+            $(".section").css({opacity:1});
+            if(true){
+                $.getScript('/js/comment-issue-data.js',function(){loadIssueData('17297b562584b5cec3d7','46c7652ed4f09fb1d847d15df81500a5a2ceeae8','exceting','exceting.github.io',false);});
+            }
+            if(false){
+                loadMathJax();
+            }
+            loadMainJs(jQuery, window.moment, window.ClipboardJS, window.IcarusThemeSettings);
+            loadBackTop();
+            loadBusuanzi();
+            if(typeof loadBanner == 'function'){
+                loadBanner();
+            }
+        });</script></body></html>
