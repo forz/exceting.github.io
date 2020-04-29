@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="generator" content="Hexo 4.2.0"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><meta name="keywords" content="[object Object]"><meta name="description" content="最近公司有个需求需要借助InfluxDB实现（或者更准确的说，使用该数据库可以更容易的实现），因此稍微看了下这个数据库，把比较重要的一些东西先简单记录一下，日后如果踩坑，也会继续在下面补充。"><meta name="author" content="exceting"><title>InfluxDB（一）初探时序数据库 - S</title><meta description="最近公司有个需求需要借助InfluxDB实现（或者更准确的说，使用该数据库可以更容易的实现），因此稍微看了下这个数据库，把比较重要的一些东西先简单记录一下，日后如果踩坑，也会继续在下面补充。"><meta property="og:type" content="article"><meta property="og:title" content="InfluxDB（一）初探时序数据库"><meta property="og:url" content="http://yoursite.com/2019/06/21/InfluxDB%EF%BC%88%E4%B8%80%EF%BC%89%E5%88%9D%E6%8E%A2%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93/"><meta property="og:site_name" content="S"><meta property="og:description" content="最近公司有个需求需要借助InfluxDB实现（或者更准确的说，使用该数据库可以更容易的实现），因此稍微看了下这个数据库，把比较重要的一些东西先简单记录一下，日后如果踩坑，也会继续在下面补充。"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://myblog.sharemer.com/avatar.jpg"><meta property="article:published_time" content="2019-06-20T16:09:00.000Z"><meta property="article:modified_time" content="2020-04-29T16:27:43.152Z"><meta property="article:author" content="exceting"><meta property="article:tag" content="数据库"><meta property="article:tag" content="TSDB"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="http://myblog.sharemer.com/avatar.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://yoursite.com/2019/06/21/InfluxDB%EF%BC%88%E4%B8%80%EF%BC%89%E5%88%9D%E6%8E%A2%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93/"},"headline":"InfluxDB（一）初探时序数据库","image":["http://myblog.sharemer.com/avatar.jpg"],"datePublished":"2019-06-20T16:09:00.000Z","dateModified":"2020-04-29T16:27:43.152Z","author":{"@type":"Person","name":"exceting"},"description":"最近公司有个需求需要借助InfluxDB实现（或者更准确的说，使用该数据库可以更容易的实现），因此稍微看了下这个数据库，把比较重要的一些东西先简单记录一下，日后如果踩坑，也会继续在下面补充。"}</script><link rel="alternative" href="/atom.xml" title="S" type="application/atom+xml"><link rel="icon" href="/img/favicon.png"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/font-awesome/5.12.0/css/all.min.css"><link rel="stylesheet" href="https://fonts.loli.net/css?family=Ubuntu:400,600|Source+Code+Pro|Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Microsoft YaHei:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&amp;amp;subset=latin,latin-ext|Inconsolata|Itim|Lobster.css"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/lightgallery/1.6.12/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/justifiedGallery/3.7.0/css/justifiedGallery.min.css"><!--!--><!--!--><script src="https://cdnjs.loli.net/ajax/libs/pace/1.0.2/pace.min.js"></script><link rel="stylesheet" href="/css/style.css"><script src="https://cdnjs.loli.net/ajax/libs/jquery/3.3.1/jquery.min.js"></script><script src="/js/globalUtils.js"></script></head><body class="is-3-column has-navbar-fixed-top"><nav class="navbar navbar-main is-fixed-top"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="http://myblog.sharemer.com/logooo.png" alt="S" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">首页</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">标签</a><a class="navbar-item" href="/about">关于</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/exceting"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a><a class="navbar-item" id="night-nav" title="Night Mode" href="javascript:;"><i class="fas fa-moon" id="night-icon"></i></a></div></div></div></nav><script type="text/javascript" src="/js/theme-setting.js"></script><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta size-small is-uppercase level is-mobile"><div class="level-left"><i class="far fa-calendar-plus"> </i>2019-06-21  <a class="commentCountImg" href="/2019/06/21/InfluxDB%EF%BC%88%E4%B8%80%EF%BC%89%E5%88%9D%E6%8E%A2%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93/#comment-container"><span class="display-none-class">7d4be6065d4df867469c50d8c63cea4e</span><i class="far fa-comment-dots"></i> <span class="commentCount" id="7d4be6065d4df867469c50d8c63cea4e">99+</span>  </a><span class="level-item"><i class="far fa-clock"> </i>32 分钟  <i class="fas fa-pencil-alt"> </i>4.8k</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;&nbsp;<span id="busuanzi_value_page_pv">0</span>次访问</span></div></div><h1 class="title is-3 is-size-4-mobile">InfluxDB（一）初探时序数据库</h1><div class="content"><blockquote>
+<p>最近公司有个需求需要借助<code>InfluxDB</code>实现（或者更准确的说，使用该数据库可以更容易的实现），因此稍微看了下这个数据库，把比较重要的一些东西先简单记录一下，日后如果踩坑，也会继续在下面补充。</p>
+</blockquote>
+<a id="more"></a>
+
+<h3 id="零、下载-amp-安装"><a href="#零、下载-amp-安装" class="headerlink" title="零、下载&amp;安装"></a>零、下载&amp;安装</h3><p>官方地址：<a href="https://portal.influxdata.com/downloads/">https://portal.influxdata.com/downloads/</a></p>
+<h3 id="一、什么是时序数据库，它可以用来做什么？"><a href="#一、什么是时序数据库，它可以用来做什么？" class="headerlink" title="一、什么是时序数据库，它可以用来做什么？"></a>一、什么是时序数据库，它可以用来做什么？</h3><p>简单来说<code>时序数据库</code>就是存储带有<code>时间戳</code>且包含<code>随时间发生变化</code>的数据，<code>InfluxDB</code>属于一种<code>时序数据库</code>。这类数据具体指什么数据呢？这里举几个例子：</p>
+<ol>
+<li><p>监控，比如某一时段CPU占用率、服务QPS、服务耗时等监控数据</p>
+</li>
+<li><p>某飞机在运行过程中各时刻的高度、速度、机舱内温度、湿度</p>
+</li>
+<li><p>某地区每时每刻的室外温度记录</p>
+</li>
+</ol>
+<p>上述的数据都满足某一个具体的事物（监控指标、飞机、地区）随着时间的变化而需要记录的一些数据（监控数据、速度、温度等），这些数据被称为时序性数据，这些数据可以被用来做大数据分析、人工智能等。</p>
+<article class="message is-danger"><div class="message-body">
+<p><strong>❓ 疑问点：</strong>通过上述的例子，这些无非是一些指标数据嘛，为什么非得用时序性数据库记录？不可以用<code>Mysql</code>这种关系型数据库来做吗？</p>
+</div></article>
+
+<p>不可以，首先对于这种数据，量级上是巨大的，比如每时每刻都要记录某飞机的坐标变化，类似这种指标，量级很庞大，关系型数据库设计之初并不是为了处理这种大数据量级的，即便是后来的分表分库，也是为了优化数据量和访问量大了以后查询和写入性能问题的，所以不适合用来存储数量如此庞大的数据，所以这并不是能不能实现的问题，而是适不适合的问题，而时序型数据库的写入速度非常快，其次内部还会对存储数据进行压缩，同时提供了更高的可用性，比如数据保留策略、数据聚合函数、连续查询等。数据保留策略可以保证超过指定期限的数据被回收，释放磁盘空间。</p>
+<h3 id="二、InfluxDB基本概念"><a href="#二、InfluxDB基本概念" class="headerlink" title="二、InfluxDB基本概念"></a>二、InfluxDB基本概念</h3><h4 id="2-1：建表"><a href="#2-1：建表" class="headerlink" title="2.1：建表"></a>2.1：建表</h4><p>不需要专门建表，一般<code>insert</code>执行过去时，如果发现表不存在，就自动创建。</p>
+<h4 id="2-2：基本概念与mysql中概念的对应关系"><a href="#2-2：基本概念与mysql中概念的对应关系" class="headerlink" title="2.2：基本概念与mysql中概念的对应关系"></a>2.2：基本概念与mysql中概念的对应关系</h4><table>
+<thead>
+<tr>
+<th>概念名称</th>
+<th>概念解释</th>
+<th>MySQL类比</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>database</td>
+<td>数据库</td>
+<td>类似mysql里的库</td>
+</tr>
+<tr>
+<td>measurement</td>
+<td>表</td>
+<td>类似mysql里的表</td>
+</tr>
+<tr>
+<td>point</td>
+<td>一行数据记录</td>
+<td>类似mysql里的一行数据</td>
+</tr>
+</tbody></table>
+<center>表1</center>
+
+<h4 id="2-3：point详解"><a href="#2-3：point详解" class="headerlink" title="2.3：point详解"></a>2.3：point详解</h4><p><code>point</code>的概念就类似于<code>mysql</code>里<code>一行数据</code>（data point，直译为数据点，可以理解成一行数据），<code>point</code>的构成部分有三个：</p>
+<table>
+<thead>
+<tr>
+<th>point属性</th>
+<th>属性解释</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>time</td>
+<td>时间戳</td>
+<td>influxdb自带字段，单位：纳秒</td>
+</tr>
+<tr>
+<td>tags</td>
+<td>有各种索引的属性</td>
+<td>可设置多个，逗号隔开</td>
+</tr>
+<tr>
+<td>fields</td>
+<td>没有索引的属性</td>
+<td>可设置多个，逗号隔开</td>
+</tr>
+</tbody></table>
+<center>表2</center>
+
+<p><code>tags</code>和<code>fileds</code>的区别：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>. field无索引，一般表示会随着时间戳而发生改变的属性，比如温度、经纬度等，类型可以是 string, <span class="keyword">float</span>, <span class="keyword">int</span>, bool</span><br><span class="line"><span class="number">2</span>. tag有索引，一般表示不会随着时间戳而发生改变的属性，比如城市、编号等，类型只可为 string</span><br></pre></td></tr></table></figure>
+
+<p>比较值得注意的是：在<code>InfluxDB</code>中，<code>tags</code>决定了<code>series</code>的数量，而<code>series</code>的数量越大，对于系统CPU和<code>InfluxDB</code>的性能影响越大，<code>series</code>估算方法下面会说。</p>
+<h4 id="2-4：sql语句示范"><a href="#2-4：sql语句示范" class="headerlink" title="2.4：sql语句示范"></a>2.4：sql语句示范</h4><p><strong>建库：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">database</span> <span class="string">"库名"</span></span><br></pre></td></tr></table></figure>
+
+<p>一般来说，新建完库，还要对该库设置自己的<code>时效策略</code>（<code>RP</code>），下面会详细说明<code>RP</code>的设置方法，一般建好库后都会有一个默认的<code>RP策略</code></p>
+<p><strong>插入数据：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> results,hostname=index2,<span class="keyword">name</span>=index2333  <span class="keyword">value</span>=<span class="number">2</span>,value2=<span class="number">4</span></span><br><span class="line"></span><br><span class="line">      <span class="comment">-------- ----------------------------  -------------------------</span></span><br><span class="line"></span><br><span class="line">        表名               tags的设置                <span class="keyword">fields</span>的设置</span><br></pre></td></tr></table></figure>
+
+<p>上面这句sql的意思就是说在名为<code>result</code>的表里，插入两个分别命名为<code>hostname</code>和<code>name</code>取值分别为<code>index2</code>和<code>index2333</code>的<code>tags</code>，以及两个分别命名为<code>value</code>和<code>value2</code>取值分别为2和4的<code>fields</code>的数据。</p>
+<article class="message is-warning"><div class="message-body">
+<p>⚠️ 注意：这里的指令直接输入整数，<code>InfluxDB</code>是按照<code>浮点型</code>处理的，如果一定要让上面的<strong>value=2</strong>和<strong>value2=4</strong>中的<strong>2</strong>和<strong>4</strong>是整型数据，那么需要在后面加上修饰词：<strong>value=2i</strong>，<strong>i</strong>就代表整型。</p>
+</div></article>
+
+<p><strong>检索数据：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> results</span><br></pre></td></tr></table></figure>
+
+<p>打印结果为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">name: results2</span><br><span class="line">time                hostname name      value value2</span><br><span class="line">----                -------- ----      ----- ------</span><br><span class="line">1560928150794920700 index2   index2333 2     4</span><br></pre></td></tr></table></figure>
+
+<p><strong>分页检索：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> 表 <span class="keyword">WHERE</span> 条件 <span class="keyword">LIMIT</span> <span class="keyword">rows</span> <span class="keyword">OFFSET</span> (page - <span class="number">1</span>)*<span class="keyword">rows</span></span><br></pre></td></tr></table></figure>
+
+<p>rows代表每页展示行数，page表示页码</p>
+<p><strong>删除表：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">drop</span> measurement <span class="string">"表名"</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="三、InfluxDB的时效设置"><a href="#三、InfluxDB的时效设置" class="headerlink" title="三、InfluxDB的时效设置"></a>三、InfluxDB的时效设置</h3><p>很遗憾，<code>InfluxDB</code>是不支持删除和修改的，删除有专门的操作，但是性能很低，不建议使用。</p>
+<p><code>InfluxDB</code>支持定期清除数据策略。</p>
+<p>查看当前库对应策略配置的命令为：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">retention</span> policies <span class="keyword">on</span> <span class="string">"库名"</span></span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">name       duration      shardGroupDuration       replicaN     default</span><br><span class="line">-------    ---------     ------------------       ---------         -------</span><br><span class="line">autogen        0s            168h0m0s                 1               <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p><code>name</code>：过期策略名</p>
+<p><code>duration</code>：保留多长时间的数据，比如3w，意思就是把三周前的数据清除掉，只保留三周内的，支持h（小时），d（天），w（星期）这几种配法。</p>
+<p><code>shardGroupDuration</code>：存储数据的分组结构，比如设置为1d，表示的是每组存储1d的数据量，也就是说数据将按照天为单位划分存储分组，然后根据每条数据的时间戳决定把它放到哪个分组里，因此这个概念还会影响到过期策略，因为InfluxDB在清除过期数据时不可能逐条清理，而是通过清除整个<code>ShardGroup</code>的方式进行，因为通过跟当前时间对比就可以知道哪些分组里的数据一定是过期的，从而进行整组清理，效率往往更高。</p>
+<p><code>replicaN</code>：副本数量，一般为1个（这个大概就是备份的意思？这个配置在单实例模式下不起作用）</p>
+<p><code>default</code>：是否是默认配置，设置为<code>true</code>表示默认的意思，主要用于查询时是否指定策略，如果不指定，则这个查询就是针对<code>default=true</code>的策略进行的，注意，本文章里的sql都没有指明保留策略的名字，如果有需要，那么请指定。一个库允许有多套策略配置（每套策略里都可以有自己的一份数据，比如同样一张表的数据在策略A和策略B的情况下是不同的，可以理解为一个库对应N个策略，每个策略里有自己的N多张表，相互独立），在不指定策略名称的情况下写的sql，默认使用<code>default=true</code>的策略。</p>
+<p>当然，策略也支持修改，指令如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">alter</span> <span class="keyword">retention</span> <span class="keyword">policy</span> <span class="string">"autogen"</span> <span class="keyword">on</span> <span class="string">"test"</span> <span class="keyword">duration</span> <span class="number">30</span>d <span class="keyword">default</span></span><br></pre></td></tr></table></figure>
+
+<p>上面这条指令就会把上面策略明为<code>autogen</code>的策略有效保存时间改为<code>30天</code>。</p>
+<h3 id="四、InfluxDB的存储结构"><a href="#四、InfluxDB的存储结构" class="headerlink" title="四、InfluxDB的存储结构"></a>四、InfluxDB的存储结构</h3><h4 id="4-1：结构层级"><a href="#4-1：结构层级" class="headerlink" title="4.1：结构层级"></a>4.1：结构层级</h4><p>了解完策略，结合上面提到的<code>series</code>、<code>tags</code>、<code>fields</code>等概念，画一下单个<code>InfluxDB库</code>的存储结构：</p>
+<p><img src="http://myblog.sharemer.com/2019/06/21/20190621-1-1.png" alt="图1" title="图1"></p>
+<p>图里没有体现出<code>tags</code>、<code>fields</code>这些数据层面的东西，它们最终被存放在了<code>Shard</code>里，之前说过<code>tags</code>会影响<code>series</code>的大小，其实<code>series</code>就相当于一个唯一化分类，<code>eries</code>估算方式为：</p>
+<p><code>series的个数 = RP × measurement × tags（tags去重后的个数）</code></p>
+<p>比如一个<code>database</code>中有一个<code>measurement</code>，叫<code>test</code>，有<code>两个RP</code>（7d, 30d），<code>tag</code>有<code>host</code>，<code>server</code>。host的值有<code>hostA、hostB</code>，server为<code>server1，server2</code>。那么这个database的series值为<code>2RP x 4tags = 8</code></p>
+<h4 id="4-2：LSM-Tree"><a href="#4-2：LSM-Tree" class="headerlink" title="4.2：LSM-Tree"></a>4.2：LSM-Tree</h4><p>回归<code>图1</code>前，先来了解下<code>LSM-Tree</code>，几乎所有的k-v存储的写密集型数据库都采用该数据结构实现，该数据结构的结构如下（注意下面说的层级并非树的层级，而是合并逻辑发生时的层级）：</p>
+<p><img src="http://myblog.sharemer.com/2019/06/21/20190621-1-2.png" alt="图2" title="图2"></p>
+<p>如<code>图2</code>，该结构写入流程如下：</p>
+<p>写入的数据首先加到0层，0层的数据存储在内存中，短期内查询的数据一般在0层，由于是内存操作，因此效率会非常高，当0层的数据达到一定大小时，此时会把0层 和位于它下面的1层进行合并，然后合并出来的新的数据（0层+1层的数据）会顺序写磁盘（这里由于是顺序写入磁盘，因此写性能会非常好），然后替换掉原来老的1层数据，当1层达到一定大小的时候，将继续和它的下层合并，以此类推，一级一级的往下递，除此之外还可以将合并之后旧文件全部删掉，留下最新的。</p>
+<p><code>LSM-Tree</code>参考文章：<a href="https://cloud.tencent.com/developer/news/340271">LSM-tree 基本原理及应用</a></p>
+<p>然后回归<code>图1</code>，最终的数据会被存储进<code>Shard</code>，<code>Shard</code>里存在几个区域，就是最终存放数据的地方，下面针对这几个区域说明下它们的作用：</p>
+<h4 id="4-3：Cache"><a href="#4-3：Cache" class="headerlink" title="4.3：Cache"></a>4.3：Cache</h4><p>相当于上面说的<code>LSM-Tree</code>的<code>0层</code>，存放于<code>内存</code>中，写入的数据时首先被该模块接收并存储，该模块在内存中表现为一个map结构，k = seriesKey + 分隔符 + fieldsName，v = 具体的filed对应的值的数组，具体结构体如下（参考网上资料）：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Cache <span class="keyword">struct</span> &#123;</span><br><span class="line">    commit  sync.Mutex</span><br><span class="line">    mu      sync.RWMutex</span><br><span class="line">    store   <span class="keyword">map</span>[<span class="keyword">string</span>]*entry</span><br><span class="line">    size    <span class="keyword">uint64</span>              <span class="comment">// 当前使用内存的大小</span></span><br><span class="line">    maxSize <span class="keyword">uint64</span>              <span class="comment">// 缓存最大值</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// snapshots are the cache objects that are currently being written to tsm files</span></span><br><span class="line">    <span class="comment">// they're kept in memory while flushing so they can be queried along with the cache.</span></span><br><span class="line">    <span class="comment">// they are read only and should never be modified</span></span><br><span class="line">    <span class="comment">// memtable 快照，用于写入 tsm 文件，只读</span></span><br><span class="line">    snapshot     *Cache</span><br><span class="line">    snapshotSize <span class="keyword">uint64</span></span><br><span class="line">    snapshotting <span class="keyword">bool</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// This number is the number of pending or failed WriteSnaphot attempts since the last successful one.</span></span><br><span class="line">    snapshotAttempts <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">    stats        *CacheStatistics</span><br><span class="line">    lastSnapshot time.Time</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<center>代码块1</center>
+
+<p>基于前面说的<code>LSM-Tree</code>，可以知道这里的cache不是持续增长的，而是达到一定值就会进行跟下层存储在磁盘上的数据（1~n层）进行合并，然后清空cache，在InfluxDB中，这一部分存储在磁盘上的数据，就是指<code>TSM File模块</code>，下面会介绍。</p>
+<h4 id="4-4：WAL"><a href="#4-4：WAL" class="headerlink" title="4.4：WAL"></a>4.4：WAL</h4><p>在上面对于Cache的描述中，Cache是基于内存做的写入数据接收方，那么如果中途机器宕掉，那么就会造成Cache里数据丢失的问题，为了解决这个问题，InfluxDB就设计了<code>WAL模块</code>，实际在写入一个数据时，不仅会先写进Cache，还会<code>写入WAL</code>，可以简单理解WAL就是对Cache里数据的<code>备份</code>，防止数据丢失，在Cache做完一次合并清除掉自身时，旧的WAL文件也会随之删除，然后新建一个WAL，迎接新一轮的写入。同样的，在InfluxDB启动时，也会先去<code>读取WAL文件初始化Cache模块</code>。</p>
+<h4 id="4-5：TSM-File"><a href="#4-5：TSM-File" class="headerlink" title="4.5：TSM File"></a>4.5：TSM File</h4><p>用于组成<code>TSM-Tree</code>结构的主要磁盘文件（可以对应<code>图2</code>的1~n层），内部做了很多存储以及压缩优化，单个<code>TSM File</code>的最大大小为<code>2GB</code>。</p>
+<h4 id="4-6：Compactor"><a href="#4-6：Compactor" class="headerlink" title="4.6：Compactor"></a>4.6：Compactor</h4><p>在后台持续运行的一个task（频率为1s），主要做以下事情：</p>
+<ol>
+<li><p>在Cache达到阈值时，进行快照，然后将数据合并并保存在TSM File中</p>
+</li>
+<li><p>合并<code>TSM File</code>，将多个小型TSM File进行合并，使得每个文件的大小尽可能达到单个文件最大大小（也就是上面说到的2GB）</p>
+</li>
+<li><p>检查并<code>删除</code>一些<code>已关闭</code>的WAL文件</p>
+</li>
+</ol>
+<h3 id="五、具体案例，以及实际的存储目录"><a href="#五、具体案例，以及实际的存储目录" class="headerlink" title="五、具体案例，以及实际的存储目录"></a>五、具体案例，以及实际的存储目录</h3><p>结合<code>图1</code>的结构以及<code>图2</code>的数据结构，再加上对<code>shard</code>内部各组件的介绍，下面通过一个实际的例子来探索下InfluxDB实际的存储目录。</p>
+<p>现在创建出来一个叫<code>style_rank</code>的库，且设置<code>默认RP为7d</code>，保存周期为<code>7天</code>，默认分组策略为<code>24h</code>分一次，如图：</p>
+<p><img src="http://myblog.sharemer.com/2019/06/21/20190621-1-3.png" alt="图3" title="图3"></p>
+<p>图中名为<code>7d</code>的<code>rp策略</code>被设置为默认策略，其中<code>duration</code>被设置为<code>168h</code>，<code>shardGroupDuration</code>被设置为了<code>24h</code>，意味着该策略里的表数据将以7天为一个周期过期，期间以1天为单位分组。</p>
+<h4 id="5-1：InfluxDB配置文件"><a href="#5-1：InfluxDB配置文件" class="headerlink" title="5.1：InfluxDB配置文件"></a>5.1：InfluxDB配置文件</h4><p>下载下来一个InfluxDB后，通过配置文件<code>influxdb.conf</code>可以配置各个文件存放的目录：</p>
+<p><img src="http://myblog.sharemer.com/2019/06/21/20190621-1-4.png" alt="图4" title="图4"></p>
+<p>这几个配置决定了你将产生的数据存放在哪里，建议自定义这个，默认的目录很迷=_=</p>
+<h4 id="5-2：具体的数据目录"><a href="#5-2：具体的数据目录" class="headerlink" title="5.2：具体的数据目录"></a>5.2：具体的数据目录</h4><p>配置完上面的文件，启动，然后录入数据，然后再去具体的目录下查找具体的数据文件：</p>
+<p><strong>元数据层：</strong>用来存放<code>当前库的属性</code>，比如<code>RP</code>、<code>默认RP</code>、<code>分组策略</code>等。</p>
+<p><img src="http://myblog.sharemer.com/2019/06/21/20190621-1-5.png" alt="图5" title="图5"></p>
+<p><strong>wal层：</strong>用来存放刚写入数据的信息，会先写入内存，然后异步写入<code>wal文件</code>，wal文件用来重启InfluxDB时恢复内存数据用，当wal文件达到一定大小时，会压入<code>data层</code>，<code>wal层</code>的结构和<code>data层</code>的<code>几乎一致</code>：</p>
+<p><img src="http://myblog.sharemer.com/2019/06/21/20190621-1-6.png" alt="图6" title="图6"></p>
+<p>上面进入wal目录后，需要选择正确的库，这里选择<code>style_rank</code>，进入库后，会显示出该库的所有RP，这里选择<code>7d</code>，然后对应<code>图1</code>，你现在来到了<code>ShardGrou</code>p层，<code>图6</code>中的编号，就是生成的<code>ShardGroup</code>，随便进入一个，则可以看到最终的<code>wal文件</code>（事实上只有当天建的group内的wal才有数据）。</p>
+<p><strong>data层：</strong>用来最终存放数据的目录，所有<code>wal文件</code>内的数据达到一定大小后，均会被压缩进<code>data层</code>，现在进入<code>data层</code>，然后进入<code>style_rank</code>：</p>
+<p><img src="http://myblog.sharemer.com/2019/06/21/20190621-1-7.png" alt="图7" title="图7"></p>
+<p>可以看到下方除了有两个<code>RP策略</code>外，还有<code>_series目录</code>，这个目录就是存放<code>索引</code>（<code>tags</code>字段所产生的索引数据）的地方，用于服务重启时恢复索引数据用。</p>
+<p>进入<code>7d</code>，可以看到跟wal层差不多的<code>ShardGroup</code>分层，你现在又来到了<code>图1</code>的<code>ShardGroup</code>层：</p>
+<p><img src="http://myblog.sharemer.com/2019/06/21/20190621-1-8.png" alt="图8" title="图8"></p>
+<p>然后再次进入一个分组内：</p>
+<p><img src="http://myblog.sharemer.com/2019/06/21/20190621-1-9.png" alt="图9" title="图9"></p>
+<p>最终的<code>tsm文件</code>就存在该目录下，<code>fields.idx</code>存放的是表里的<code>fields元数据</code>，用于写入数据时做<code>效验</code>用。</p>
+<h3 id="六、执行计划"><a href="#六、执行计划" class="headerlink" title="六、执行计划"></a>六、执行计划</h3><p>然后继续由上面的<code>style_rank</code>库，在<code>7d</code>这个<code>RP</code>下，新建两张表：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> season_views,<span class="built_in">date</span>=<span class="string">"201907"</span> season_id=<span class="number">666</span>,views=<span class="number">56789</span></span><br><span class="line"><span class="keyword">insert</span> season_views_v2,season_id=<span class="number">666</span> views=<span class="number">56789</span></span><br></pre></td></tr></table></figure>
+
+<p>目的很简单，只是为了记录下<code>season_id=xxx</code>的数据在某一时刻对应的<code>views值</code>，俩表的区别在于，<code>season_view</code>仅仅以<code>日期</code>为tag（作为索引字段，可以忽略不计），<code>season_views_v2</code>则以<code>season_id</code>作为tag，某一时刻，两张表的数据量均达到了<code>5kw</code>且<code>数据一致</code>，下面，让我们以最简单的方式，查询下这两张表：</p>
+<article class="message is-success"><div class="message-body">
+<p>ℹ️ ps：<code>sql</code>前加<code>explain</code>关键字可以查看其<code>执行计划</code>，加<code>explain analyze</code>可以看到具体每一步执行的耗时。</p>
+</div></article>
+
+<p><img src="http://myblog.sharemer.com/2019/06/21/20190621-1-10.png" alt="图10" title="图10"></p>
+<p>同样的查询，<code>season_id</code>加了索引和不加索引的区别：</p>
+<p><code>NUMBER OF SERIES</code>（扫描系列数，加了索引后根据series的哈希算法，同一个season_id都被分在了同一个Shard里，这里之所以为8，是因为ShardGroup不同）由不加索引的64个，减少到了8个</p>
+<p><code>NUMBER OF FILES</code>（扫描文件数）由不加索引的54个减少到11个</p>
+<p><code>NUMBER OF BLOCKS</code>（扫描的数据块）由不加索引的152058减少到了184</p>
+<h3 id="七、总结"><a href="#七、总结" class="headerlink" title="七、总结"></a>七、总结</h3><ol>
+<li><p>在使用时，尽可能按照某<code>具体时间段</code>进行过滤，如果过滤条件筛选出的数据量过大，则会严重影响查询效率。</p>
+</li>
+<li><p>适度使用函数，若使用，请保证筛选条件筛选出的数据量，如果过大，效率会极低，比如在<code>season_views_v2</code>中启用<code>TOP函数</code>，查出前三名，查询耗时<code>超过10s</code>，加上<code>season_id</code>条件后，则迅速返回。</p>
+</li>
+<li><p>加索引时需要注意，尽量避免<code>大数据量的属性做tag</code>，否则会产生<code>大量series</code>，生成<code>大量索引数据</code>，占用过多内存，比如<code>用户级别</code>的tag（这里的<code>用户级别</code>是指大型网站用户数量级，一般1亿以上的情况）。</p>
+</li>
+<li><p><code>免费版</code>的InfluxDB<code>不支持集群</code>，主从需要借助<code>influx-proxy</code>实现，也可以自己通过<code>监听wal文件</code>写入，通过<code>消息队列</code>的方式实现主从同步，<code>wal</code>类似mysql里的<code>binlog</code>。</p>
+</li>
+<li><p>建议使用的时候，先把自己的库建好，然后再把RP建好，如果嫌麻烦，可以直接把自己新建的RP定义成默认RP，如果RP设置为默认，只会对查询产生影响（当然写的时候也需要指定），在sql中不指定RP的情况下执行，则认为就是走的默认RP。</p>
+</li>
+<li><p>分库，建议按照日期分。</p>
+</li>
+</ol>
+</div><ul class="post-copyright"><li><strong>本文标题：</strong><a href="http://yoursite.com/2019/06/21/InfluxDB（一）初探时序数据库/">InfluxDB（一）初探时序数据库</a></li><li><strong>本文作者：</strong><a href="http://yoursite.com">S</a></li><li><strong>本文链接：</strong><a href="http://yoursite.com/2019/06/21/InfluxDB（一）初探时序数据库/">http://yoursite.com/2019/06/21/InfluxDB（一）初探时序数据库/</a></li><li><strong>版权声明：</strong><span>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</span></li></ul><div></div><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/social-share.js/1.0.16/css/share.min.css"><div class="social-share"></div><script src="https://cdnjs.loli.net/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button is-info donate"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="http://myblog.sharemer.com/alipay_qrcode.png" alt="支付宝"></span></a><a class="button is-success donate"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="http://myblog.sharemer.com/wx_qrcode.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2019/05/07/JVM%E5%9F%BA%E7%A1%80%E5%9B%9E%E9%A1%BE%E8%AE%B0%E5%BD%95%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/"><span class="level-item">JVM基础回顾记录（二）：垃圾收集</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">评论</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/gitalk/1.6.0/gitalk.css"><script> $.getScript('/js/gitalk.min.js', function () { 
+            var gitalk = new Gitalk({
+            id: '7d4be6065d4df867469c50d8c63cea4e',
+            repo: 'exceting.github.io',
+            owner: 'exceting',
+            clientID: '17297b562584b5cec3d7',
+            clientSecret: '46c7652ed4f09fb1d847d15df81500a5a2ceeae8',
+            admin: ["exceting"],
+            createIssueManually: true,
+            distractionFreeMode: false,
+            perPage: 10,
+            pagerDirection: 'last',
+            
+            
+            enableHotKey: true,
+            isLocked: false
+        })
+        gitalk.render('comment-container')});</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1 is-sticky"><div class="card widget toc-scroll" id="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list toc"><li><a class="is-flex toc-item" id="toc-item-零、下载-amp-安装" href="#零、下载-amp-安装"><span>零、下载&amp;amp;安装</span></a></li><li><a class="is-flex toc-item" id="toc-item-一、什么是时序数据库，它可以用来做什么？" href="#一、什么是时序数据库，它可以用来做什么？"><span>一、什么是时序数据库，它可以用来做什么？</span></a></li><li><a class="is-flex toc-item" id="toc-item-二、InfluxDB基本概念" href="#二、InfluxDB基本概念"><span>二、InfluxDB基本概念</span></a><ul class="menu-list toc"><li><a class="is-flex toc-item" id="toc-item-2-1：建表" href="#2-1：建表"><span>2.1：建表</span></a></li><li><a class="is-flex toc-item" id="toc-item-2-2：基本概念与mysql中概念的对应关系" href="#2-2：基本概念与mysql中概念的对应关系"><span>2.2：基本概念与mysql中概念的对应关系</span></a></li><li><a class="is-flex toc-item" id="toc-item-2-3：point详解" href="#2-3：point详解"><span>2.3：point详解</span></a></li><li><a class="is-flex toc-item" id="toc-item-2-4：sql语句示范" href="#2-4：sql语句示范"><span>2.4：sql语句示范</span></a></li></ul></li><li><a class="is-flex toc-item" id="toc-item-三、InfluxDB的时效设置" href="#三、InfluxDB的时效设置"><span>三、InfluxDB的时效设置</span></a></li><li><a class="is-flex toc-item" id="toc-item-四、InfluxDB的存储结构" href="#四、InfluxDB的存储结构"><span>四、InfluxDB的存储结构</span></a><ul class="menu-list toc"><li><a class="is-flex toc-item" id="toc-item-4-1：结构层级" href="#4-1：结构层级"><span>4.1：结构层级</span></a></li><li><a class="is-flex toc-item" id="toc-item-4-2：LSM-Tree" href="#4-2：LSM-Tree"><span>4.2：LSM-Tree</span></a></li><li><a class="is-flex toc-item" id="toc-item-4-3：Cache" href="#4-3：Cache"><span>4.3：Cache</span></a></li><li><a class="is-flex toc-item" id="toc-item-4-4：WAL" href="#4-4：WAL"><span>4.4：WAL</span></a></li><li><a class="is-flex toc-item" id="toc-item-4-5：TSM-File" href="#4-5：TSM-File"><span>4.5：TSM File</span></a></li><li><a class="is-flex toc-item" id="toc-item-4-6：Compactor" href="#4-6：Compactor"><span>4.6：Compactor</span></a></li></ul></li><li><a class="is-flex toc-item" id="toc-item-五、具体案例，以及实际的存储目录" href="#五、具体案例，以及实际的存储目录"><span>五、具体案例，以及实际的存储目录</span></a><ul class="menu-list toc"><li><a class="is-flex toc-item" id="toc-item-5-1：InfluxDB配置文件" href="#5-1：InfluxDB配置文件"><span>5.1：InfluxDB配置文件</span></a></li><li><a class="is-flex toc-item" id="toc-item-5-2：具体的数据目录" href="#5-2：具体的数据目录"><span>5.2：具体的数据目录</span></a></li></ul></li><li><a class="is-flex toc-item" id="toc-item-六、执行计划" href="#六、执行计划"><span>六、执行计划</span></a></li><li><a class="is-flex toc-item" id="toc-item-七、总结" href="#七、总结"><span>七、总结</span></a></li></ul></div></div><script type="text/javascript" async>
+        $(document).ready(function () { //参考自 https://github.com/ppoffice/hexo-theme-icarus/pull/616/files
+            var observerTopMargin;
+            var scrollObserver;
+            var headerElems = $(".headerlink");
+            var activeTocItem;
+        
+            function initIntersectionObserver(docHeight) {
+                observerTopMargin = docHeight;
+                scrollObserver = new IntersectionObserver(scrollCallBack,
+                    {
+                        root: null,  // viewpoint
+                        rootMargin: docHeight + "px 0px -80% 0px"  // cover top 30% of viewport to the top of document
+                    })
+            }
+        
+            function scrollCallBack(entries, observer) {
+                if ($(window).scrollTop() > observerTopMargin * 0.7) { 
+                    // User somehow scroll to 70% of observerTopMargin (which is inited as 200% document height)
+                    // Observer top margin need to extend to cover all the space to the top of the document
+                    initIntersectionObserver(observerTopMargin * 2)
+                    observer.disconnect();
+                    return;
+                }
+                let toActive;
+                if (entries[0].intersectionRatio == 1) {  // enter viewed area
+                    let entry = entries.reduce((u, v) => (u.target.toc_id > v.target.toc_id ? u : v));  // get the lowest item
+                    toActive = $("#toc-item-" + $(entry.target).attr("href").substr(1));
+                } else {
+                    let entry = entries.reduce((u, v) => (u.target.toc_id < v.target.toc_id ? u : v));  // get the highest item
+                    let idx = Math.max(entry.target.toc_id - 1, 0);
+                    toActive = $("#toc-item-" + $(headerElems[idx]).attr("href").substr(1));
+                }
+                if (activeTocItem) activeTocItem.removeClass("is-current");
+                activeTocItem = toActive
+                activeTocItem.addClass("is-current");
+            }
+        
+            initIntersectionObserver($(document).height() * 2);
+            headerElems.each(function (index, obj) {
+                obj.toc_id = index;
+                scrollObserver.observe(obj);
+            })
+        });</script></div><div class="card widget"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="" src="http://myblog.sharemer.com/avatar.jpg" alt="S"></figure><p class="title is-size-4 is-block line-height-inherit">S</p><p class="is-size-6 is-block">随机和因果，命运与无常，兼而有之</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>上海</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">34</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">33</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">43</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/exceting" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile"><a class="level-item button is-transparent is-white is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/exceting"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-white is-marginless" target="_blank" rel="noopener" title="Bilibili" href="https://www.bilibili.com"><i class="fab fa-bilibili"></i></a><a class="level-item button is-transparent is-white is-marginless" target="_blank" rel="noopener" title="Email" href="mailto:1807301715@qq.com"><i class="fa fa-envelope"></i></a><a class="level-item button is-transparent is-white is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget"><div class="card-content"><h3 class="menu-label">最新评论</h3><span class="body_hot_comment">加载中，最新评论有1分钟缓存...</span></div></div><div class="card widget"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content size-small"><p><time dateTime="2019-06-20T16:09:00.000Z">2019-06-21</time></p><p class="title is-6"><a class="link-muted" href="/2019/06/21/InfluxDB%EF%BC%88%E4%B8%80%EF%BC%89%E5%88%9D%E6%8E%A2%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93/">InfluxDB（一）初探时序数据库</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a> / <a class="link-muted" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93/">时序数据库</a> / <a class="link-muted" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93/InfluxDB/">InfluxDB</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2019-05-07T01:29:00.000Z">2019-05-07</time></p><p class="title is-6"><a class="link-muted" href="/2019/05/07/JVM%E5%9F%BA%E7%A1%80%E5%9B%9E%E9%A1%BE%E8%AE%B0%E5%BD%95%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86/">JVM基础回顾记录（二）：垃圾收集</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/JAVA%E5%9F%BA%E7%A1%80/">JAVA基础</a> / <a class="link-muted" href="/categories/JAVA%E5%9F%BA%E7%A1%80/JVM/">JVM</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2019-04-15T14:20:00.000Z">2019-04-15</time></p><p class="title is-6"><a class="link-muted" href="/2019/04/15/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA%EF%BC%88%E4%BA%8C%EF%BC%89-%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA%E7%B3%BB%E7%BB%9F%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/">链路追踪（二）-分布式链路追踪系统数据采集</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/">服务治理</a> / <a class="link-muted" href="/categories/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/">链路追踪</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2019-04-13T10:34:00.000Z">2019-04-13</time></p><p class="title is-6"><a class="link-muted" href="/2019/04/13/Kingdom%20Rush%20Origins/">Kingdom Rush Origins</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/%E6%B8%B8%E6%88%8F/">游戏</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2019-04-11T00:56:00.000Z">2019-04-11</time></p><p class="title is-6"><a class="link-muted" href="/2019/04/11/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA%EF%BC%88%E4%B8%80%EF%BC%89-%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BB%8B%E7%BB%8D/">链路追踪（一）-分布式链路追踪系统的介绍</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/">服务治理</a> / <a class="link-muted" href="/categories/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/">链路追踪</a></p></div></article></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile is-marginless" href="/categories/JAVA%E5%9F%BA%E7%A1%80/"><span class="level-start"><span class="level-item">JAVA基础</span></span><span class="level-end"><span class="level-item tag">2</span></span></a><ul class="mr-0"><li><a class="level is-mobile is-marginless" href="/categories/JAVA%E5%9F%BA%E7%A1%80/JVM/"><span class="level-start"><span class="level-item">JVM</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li></ul></li><li><a class="level is-mobile is-marginless" href="/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"><span class="level-start"><span class="level-item">并发编程</span></span><span class="level-end"><span class="level-item tag">7</span></span></a><ul class="mr-0"><li><a class="level is-mobile is-marginless" href="/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/ThreadLocal/"><span class="level-start"><span class="level-item">ThreadLocal</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/juc/"><span class="level-start"><span class="level-item">juc</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/%E5%9B%BE%E8%A7%A3%E5%A4%9A%E7%BA%BF%E7%A8%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"><span class="level-start"><span class="level-item">图解多线程设计模式</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li></ul></li><li><a class="level is-mobile is-marginless" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"><span class="level-start"><span class="level-item">数据库</span></span><span class="level-end"><span class="level-item tag">3</span></span></a><ul class="mr-0"><li><a class="level is-mobile is-marginless" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/NoSQL/"><span class="level-start"><span class="level-item">NoSQL</span></span><span class="level-end"><span class="level-item tag">1</span></span></a><ul class="mr-0"><li><a class="level is-mobile is-marginless" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/NoSQL/Redis/"><span class="level-start"><span class="level-item">Redis</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li></ul></li><li><a class="level is-mobile is-marginless" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93/"><span class="level-start"><span class="level-item">关系型数据库</span></span><span class="level-end"><span class="level-item tag">1</span></span></a><ul class="mr-0"></ul></li></ul></li><a class="level is-mobile is-marginless" href="/categories/"><span class="level-start"><span class="level-item">查看全部&gt;&gt;</span></span></a></ul></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile is-marginless" href="/archives/2019/06/"><span class="level-start"><span class="level-item">六月 2019</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2019/05/"><span class="level-start"><span class="level-item">五月 2019</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2019/04/"><span class="level-start"><span class="level-item">四月 2019</span></span><span class="level-end"><span class="level-item tag">5</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2019/03/"><span class="level-start"><span class="level-item">三月 2019</span></span><span class="level-end"><span class="level-item tag">13</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2019/02/"><span class="level-start"><span class="level-item">二月 2019</span></span><span class="level-end"><span class="level-item tag">8</span></span></a></li><a class="level is-mobile is-marginless" href="/archives/"><span class="level-start"><span class="level-item">查看全部&gt;&gt;</span></span></a></ul></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/NIO/"><span class="tag">NIO</span><span class="tag is-grey-lightest">8</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"><span class="tag">网络编程</span><span class="tag is-grey-lightest">8</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"><span class="tag">并发编程</span><span class="tag is-grey-lightest">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ThreadLocal/"><span class="tag">ThreadLocal</span><span class="tag is-grey-lightest">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/JVM/"><span class="tag">JVM</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/OpenTracing/"><span class="tag">OpenTracing</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/juc/"><span class="tag">juc</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/"><span class="tag">多线程</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"><span class="tag">数据库</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"><span class="tag">数据结构</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"><span class="tag">设计模式</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/"><span class="tag">链路追踪</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/CompletableFuture/"><span class="tag">CompletableFuture</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/GC/"><span class="tag">GC</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Kingdom-Rush/"><span class="tag">Kingdom Rush</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ReentrantLock/"><span class="tag">ReentrantLock</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/TSDB/"><span class="tag">TSDB</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/aop/"><span class="tag">aop</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ioc/"><span class="tag">ioc</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/letter-song/"><span class="tag">letter song</span><span class="tag is-grey-lightest">1</span></a></div></div><div class="field is-grouped is-grouped-multiline"><a class="tags has-addons" href="/tags/"><span class="tag">查看全部&gt;&gt;</span></a></div></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">订阅更新</h3><form action="https://feedburner.google.com/fb/a/mailverify" method="post" target="popupwindow" onsubmit="window.open(&#039;https://feedburner.google.com/fb/a/mailverify?uri=removeifFeedsId&#039;,&#039;popupwindow&#039;,&#039;scrollbars=yes,width=550,height=520&#039;);return true"><input type="hidden" value="removeifFeedsId" name="uri"><input type="hidden" name="loc" value="en_US"><div class="field has-addons"><div class="control has-icons-left is-expanded"><input class="input" name="email" type="email" placeholder="Email"><span class="icon is-small is-left"><i class="fas fa-envelope"></i></span></div><div class="control"><input class="button is-primary" type="submit" value="订阅"></div></div><p class="help">输入邮箱开始订阅，更博后邮件通知！</p></form></div></div></div></div></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="http://myblog.sharemer.com/logooo.png" alt="S" height="28"></a><p class="size-small"><span>&copy; 2020 S</span>  Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>,Modify by <a href="https://github.com/removeif/hexo-theme-amazing" target="_blank">removeif</a> <br><span>© 版权说明：[本站所有内容均收集于互联网或自己创作，方便于本人记录和学习，如有侵权，请<a href="/message" target="_blank">留言</a>，我会立即处理]<br /></span><span><span id="statistic-times">loading...</span><script>function createTime(time) {
+            var n = new Date(time);
+            now.setTime(now.getTime() + 250),
+                days = (now - n) / 1e3 / 60 / 60 / 24,
+                dnum = Math.floor(days),
+                hours = (now - n) / 1e3 / 60 / 60 - 24 * dnum,
+                hnum = Math.floor(hours),
+            1 == String(hnum).length && (hnum = "0" + hnum),
+                minutes = (now - n) / 1e3 / 60 - 1440 * dnum - 60 * hnum,
+                mnum = Math.floor(minutes),
+            1 == String(mnum).length && (mnum = "0" + mnum),
+                seconds = (now - n) / 1e3 - 86400 * dnum - 3600 * hnum - 60 * mnum,
+                snum = Math.round(seconds),
+            1 == String(snum).length && (snum = "0" + snum),
+                document.getElementById("statistic-times").innerHTML = "❤️本站自 <strong>"+time.split(" ")[0].replace(/\//g,".")+"</strong> 已运行 <strong>" + dnum + "</strong> 天 <strong>" + hnum + "</strong> 小时 <strong>" + mnum + "</strong> 分 <strong>" + snum + "</strong> 秒！❤️";
+        }var now = new Date();setInterval("createTime('2018/12/29 00:00:00')", 250,"");</script><br></span><div class="size-small"><span>❤️感谢 <strong><span id="busuanzi_value_site_uv">99+</span></strong> 小伙伴的 <strong><span id="busuanzi_value_site_pv">99+</span></strong> 次光临！❤️</span></div></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/exceting"><i class="fab fa-github"></i></a></p></div><div class="sideMusic"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="/js/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script><meting-js style="width: auto;height: 2000px;" server="netease" type="playlist" id="2755914162" theme="#2980b9" loop="all" autoplay="false" order="list" storageName="aplayer-setting" lrctype="0" list-max-height="400px" fixed="true"></meting-js></div></div></div></div></footer><script src="https://cdnjs.loli.net/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            site: {
+                url: 'http://yoursite.com',
+                external_link: {"enable":true,"exclude":[]}
+            },
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="https://cdnjs.loli.net/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" defer></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back-to-top.js" defer></script><!--!--><!--!--><script src="https://cdnjs.loli.net/ajax/libs/lightgallery/1.6.12/js/lightgallery-all.min.js" defer></script><script src="https://cdnjs.loli.net/ajax/libs/justifiedGallery/3.7.0/js/jquery.justifiedGallery.min.js" defer></script><!--!--><!--!--><!--!--><script src="/js/toc.js" defer></script><script src="/js/main.js" defer></script><script>$.getScript('/js/comment-issue-data.js',function(){loadIssueData('17297b562584b5cec3d7','46c7652ed4f09fb1d847d15df81500a5a2ceeae8','exceting','exceting.github.io',false);})</script><link rel="stylesheet" href="/css/insight.css"><div class="searchbox ins-search"><div class="searchbox-container ins-search-container"><div class="searchbox-input-wrapper"><input class="searchbox-input ins-search-input" type="text" placeholder="想要查找什么..."><span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span></div><div class="searchbox-result-wrapper ins-section-wrapper"><div class="ins-section-container"></div></div></div></div><script>(function (window) {
+            var INSIGHT_CONFIG = {
+                TRANSLATION: {
+                    POSTS: '文章',
+                    PAGES: '页面',
+                    CATEGORIES: '分类',
+                    TAGS: '标签',
+                    UNTITLED: '(无标题)',
+                },
+                CONTENT_URL: '/content.json',
+            };
+            window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+        })(window);</script><script src="/js/insight.js" defer></script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.js"></script><script type="text/javascript">var pjax = new Pjax({
+            elements: "a",//代表点击链接就更新
+            selectors: [  //代表要更新的节点
+                ".section",
+                "title"
+            ],
+            cache: true,
+            cacheBust:false
+        })
+
+        function loadBusuanzi(){
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js", function () {});
+        }
+
+        // 开始 PJAX 执行的函数
+        document.addEventListener('pjax:send', function () {
+        });
+        
+        // PJAX 完成之后执行的函数，可以和上面的重载放在一起
+        document.addEventListener('pjax:complete', function () {
+            $(".section").css({opacity:1});
+            if(true){
+                $.getScript('/js/comment-issue-data.js',function(){loadIssueData('17297b562584b5cec3d7','46c7652ed4f09fb1d847d15df81500a5a2ceeae8','exceting','exceting.github.io',false);});
+            }
+            if(false){
+                loadMathJax();
+            }
+            loadMainJs(jQuery, window.moment, window.ClipboardJS, window.IcarusThemeSettings);
+            loadBackTop();
+            loadBusuanzi();
+            if(typeof loadBanner == 'function'){
+                loadBanner();
+            }
+        });</script></body></html>
