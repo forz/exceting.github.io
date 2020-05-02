@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="generator" content="Hexo 4.2.0"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><meta name="keywords" content="[object Object]"><meta name="description" content="所属文章：池化技术（一）Druid是如何管理数据库连接的？
+本篇为「工具人」文章，建议直接用「ctrl+f」进行查找属性、方法、类名，快速了解其含义和所属类。"><meta name="author" content="exceting"><title>Druid-类图-属性表 - S</title><meta description="所属文章：池化技术（一）Druid是如何管理数据库连接的？ 本篇为「工具人」文章，建议直接用「ctrl+f」进行查找属性、方法、类名，快速了解其含义和所属类。"><meta property="og:type" content="article"><meta property="og:title" content="Druid-类图-属性表"><meta property="og:url" content="http://yoursite.com/2019/09/20/Druid-%E7%B1%BB%E5%9B%BE-%E5%B1%9E%E6%80%A7%E8%A1%A8/"><meta property="og:site_name" content="S"><meta property="og:description" content="所属文章：池化技术（一）Druid是如何管理数据库连接的？ 本篇为「工具人」文章，建议直接用「ctrl+f」进行查找属性、方法、类名，快速了解其含义和所属类。"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://myblog.sharemer.com/avatar.jpg"><meta property="article:published_time" content="2019-09-20T07:53:00.000Z"><meta property="article:modified_time" content="2020-05-02T05:40:51.805Z"><meta property="article:author" content="exceting"><meta property="article:tag" content="池化技术"><meta property="article:tag" content="连接池"><meta property="article:tag" content="Druid"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="http://myblog.sharemer.com/avatar.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://yoursite.com/2019/09/20/Druid-%E7%B1%BB%E5%9B%BE-%E5%B1%9E%E6%80%A7%E8%A1%A8/"},"headline":"Druid-类图-属性表","image":["http://myblog.sharemer.com/avatar.jpg"],"datePublished":"2019-09-20T07:53:00.000Z","dateModified":"2020-05-02T05:40:51.805Z","author":{"@type":"Person","name":"exceting"},"description":"所属文章：池化技术（一）Druid是如何管理数据库连接的？ 本篇为「工具人」文章，建议直接用「ctrl+f」进行查找属性、方法、类名，快速了解其含义和所属类。"}</script><link rel="alternative" href="/atom.xml" title="S" type="application/atom+xml"><link rel="icon" href="/img/favicon.png"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/font-awesome/5.12.0/css/all.min.css"><link rel="stylesheet" href="https://fonts.loli.net/css?family=Ubuntu:400,600|Source+Code+Pro|Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Microsoft YaHei:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&amp;amp;subset=latin,latin-ext|Inconsolata|Itim|Lobster.css"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/lightgallery/1.6.12/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/justifiedGallery/3.7.0/css/justifiedGallery.min.css"><!--!--><!--!--><script src="https://cdnjs.loli.net/ajax/libs/pace/1.0.2/pace.min.js"></script><link rel="stylesheet" href="/css/style.css"><script src="https://cdnjs.loli.net/ajax/libs/jquery/3.3.1/jquery.min.js"></script><script src="/js/globalUtils.js"></script></head><body class="is-3-column has-navbar-fixed-top"><nav class="navbar navbar-main is-fixed-top"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="http://myblog.sharemer.com/logooo.png" alt="S" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">首页</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">标签</a><a class="navbar-item" href="/about">关于</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/exceting"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a><a class="navbar-item" id="night-nav" title="Night Mode" href="javascript:;"><i class="fas fa-moon" id="night-icon"></i></a></div></div></div></nav><script type="text/javascript" src="/js/theme-setting.js"></script><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta size-small is-uppercase level is-mobile"><div class="level-left"><i class="far fa-calendar-plus"> </i>2019-09-20  <a class="commentCountImg" href="/2019/09/20/Druid-%E7%B1%BB%E5%9B%BE-%E5%B1%9E%E6%80%A7%E8%A1%A8/#comment-container"><span class="display-none-class">605b25beac2977ed614b76a80025c04d</span><i class="far fa-comment-dots"></i> <span class="commentCount" id="605b25beac2977ed614b76a80025c04d">99+</span>  </a><span class="level-item"><i class="far fa-clock"> </i>16 分钟  <i class="fas fa-pencil-alt"> </i>2.3k</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;&nbsp;<span id="busuanzi_value_page_pv">0</span>次访问</span></div></div><h1 class="title is-3 is-size-4-mobile">Druid-类图-属性表</h1><div class="content"><blockquote>
+<p>所属文章：<a href="/2019/08/28/池化技术（一）Druid是如何管理数据库连接的？/">池化技术（一）Druid是如何管理数据库连接的？</a></p>
+<p>本篇为「工具人」文章，建议直接用「<code>ctrl+f</code>」进行查找<code>属性</code>、<code>方法</code>、<code>类名</code>，快速了解其含义和所属类。</p>
+</blockquote>
+<a id="more"></a>
+
+<p>主要流程里主要涉及到的类名称、类属性、类方法如下图（淡黄色表示属性，淡蓝色表示方法）：</p>
+<p><img src="http://myblog.sharemer.com/2019/09/20/20190920-1-1.png?imageView2/0/w/1024" alt="图1" title="图1"></p>
+<h2 id="DruidAbstractDataSource抽象类"><a href="#DruidAbstractDataSource抽象类" class="headerlink" title="DruidAbstractDataSource抽象类"></a>DruidAbstractDataSource抽象类</h2><p>这个类是druid连接池基础类，定义了一些连接池该有的基本属性，以及生成驱动连接对象的方法。</p>
+<h3 id="属性表"><a href="#属性表" class="headerlink" title="属性表"></a>属性表</h3><table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>username</td>
+<td>用户名</td>
+</tr>
+<tr>
+<td>password</td>
+<td>密码</td>
+</tr>
+<tr>
+<td>jdbcUrl</td>
+<td>驱动连接</td>
+</tr>
+<tr>
+<td>driverClass</td>
+<td>驱动class，可以不用配置</td>
+</tr>
+<tr>
+<td>initialSize</td>
+<td>初始化连接池（<code>主流程2</code>）时需要预先生成的连接对象个数</td>
+</tr>
+<tr>
+<td>maxActive</td>
+<td>池内最大连接数，也就是说生成连接的线程在当前池内连接数超过这个指标后就不再工作了，参考<code>主流程3</code></td>
+</tr>
+<tr>
+<td>minIdle</td>
+<td>池内最小闲置连接数，参考<code>流程4.1</code></td>
+</tr>
+<tr>
+<td>maxWait</td>
+<td>在业务线程拿不到可用连接而发生排队时，等待获取到可用连接对象的最大等待时间，参考<code>主流程1</code>和<code>流程1.2</code></td>
+</tr>
+<tr>
+<td>notFullTimeoutRetryCount</td>
+<td>获取不到连接时，会尝试重试，这里表示最大重试次数，参考<code>主流程1</code></td>
+</tr>
+<tr>
+<td>testOnBorrow</td>
+<td>在取出链接时，是否进行连接可用性测试，默认不开启，参考<code>主流程1</code></td>
+</tr>
+<tr>
+<td>testOnReturn</td>
+<td>在回收连接时，是否进行连接可用性测试，默认不开启，参考<code>主流程5</code></td>
+</tr>
+<tr>
+<td>testWhileIdle</td>
+<td>在闲置时间超出指定时间（timeBetweenEvictionRunsMillis）后进行连接可用性测试</td>
+</tr>
+<tr>
+<td>timeBetweenEvictionRunsMillis</td>
+<td>默认60s，一个连接闲置时间超出该值，且设置了testWhileIdle为true时，进行连接可用性测试</td>
+</tr>
+<tr>
+<td>inited</td>
+<td>是否已被初始化过，参考<code>主流程2</code></td>
+</tr>
+<tr>
+<td>filters（集合）</td>
+<td>触发责任链执行时需要执行的所有filter</td>
+</tr>
+<tr>
+<td>maxWaitThreadCount</td>
+<td>默认不开启（-1），表示取不到连接发生等待时阻塞的最大业务线程数，参考<code>流程1.2</code></td>
+</tr>
+<tr>
+<td>removeAbandoned</td>
+<td>是否主动回收一些被拿出去使用长久没有归还的连接，默认不开启，参考<code>流程4.2</code></td>
+</tr>
+<tr>
+<td>removeAbandonedTimeoutMillis</td>
+<td>表示在removeAbandoned开启的情况下，触发主动归还的时间间隔。</td>
+</tr>
+<tr>
+<td>dbType</td>
+<td>标记该连接池对象是属于什么数据库类型（根据驱动协议头推算出来）</td>
+</tr>
+<tr>
+<td>validConnectionChecker</td>
+<td>druid有多个验证长连接可用性的checker对象，该属性最终会根据数据库类型适配合适的checker对象，参考<code>流程1.3</code>里的<code>init-checker</code></td>
+</tr>
+<tr>
+<td>lock</td>
+<td>控制连接池线程安全的全局重入锁（参考全部流程里出现的lock）</td>
+</tr>
+<tr>
+<td>notEmpty</td>
+<td>由lock创建的Condition，用于连接不够用时阻塞业务线程，同时唤起<code>主流程3</code>的守护线程追加连接，解释参考<code>主流程2</code>的<code>特别说明第2条</code></td>
+</tr>
+<tr>
+<td>empty</td>
+<td>由lock创建的Condition，用于连接足够时（不发生线程等待），阻塞<code>主流程3</code>的守护线程，解释参考<code>主流程2</code>的<code>特别说明第2条</code></td>
+</tr>
+<tr>
+<td>activeConnectionLock</td>
+<td>活动连接重入锁，被借出去的连接称为active连接，这类连接在removeAbandoned开启时会被保存进下面的activeConnections里，利用该锁完成对其操作的安全性，参考<code>主流程1</code>和<code>流程4.2</code></td>
+</tr>
+<tr>
+<td>activeConnections（k-v）</td>
+<td>解释参考上面的描述，参考<code>主流程1</code>和<code>流程4.2</code></td>
+</tr>
+</tbody></table>
+<center>表1-1</center>
+
+<h3 id="方法表"><a href="#方法表" class="headerlink" title="方法表"></a>方法表</h3><table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>testConnectionInternal</td>
+<td>测试连接可用性的基本方法，参考<code>流程1.3</code></td>
+</tr>
+<tr>
+<td>createPhysicalConnection</td>
+<td>新增真正的数据库物理连接，参考<code>流程2.1</code></td>
+</tr>
+</tbody></table>
+<center>表1-2</center>
+
+<h2 id="DruidDataSource类"><a href="#DruidDataSource类" class="headerlink" title="DruidDataSource类"></a>DruidDataSource类</h2><p>这个类也是druid连接池基础类，扩展了一些其父类的功能，几乎所有的有关连接池管理的操作都在此类完成。</p>
+<h3 id="属性表-1"><a href="#属性表-1" class="headerlink" title="属性表"></a>属性表</h3><table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>connectCount</td>
+<td>一共成功从该池获取了多少次连接（只要获取成功一次，就累加一次）</td>
+</tr>
+<tr>
+<td>recycleCount</td>
+<td>一共成功归还了多少次连接到该池（成功归还一次，累加一次）</td>
+</tr>
+<tr>
+<td>removeAbandonedCount</td>
+<td>在removeAbandoned开启的情况下，被检查后强制归还的连接数</td>
+</tr>
+<tr>
+<td>connections（数组）</td>
+<td>最终池子里没有被使用的闲置连接存放的地方，类型是DruidConnectionHolder</td>
+</tr>
+<tr>
+<td>poolingCount</td>
+<td>pollingCount就是指上面connections的真实数量</td>
+</tr>
+<tr>
+<td>activeCount</td>
+<td>当前处于借出状态的连接数（也即是被拿出去使用的连接数），poolingCount+activeCount就是当前该池子里一共有多少个连接，不能超过maxActive，参考<code>主流程3</code></td>
+</tr>
+<tr>
+<td>discardCount</td>
+<td>被丢弃的连接数，触发丢弃的地方有很多，比如<code>流程1.4</code>、<code>流程4.1</code></td>
+</tr>
+<tr>
+<td>evictConnections（数组）</td>
+<td>参考<code>流程4.1</code></td>
+</tr>
+<tr>
+<td>keepAliveConnections（数组）</td>
+<td>参考<code>流程4.1</code></td>
+</tr>
+<tr>
+<td>createConnectionThread（线程）</td>
+<td>生产连接的守护线程，参考<code>主流程3</code></td>
+</tr>
+<tr>
+<td>destroyConnectionThread（线程）</td>
+<td>抛弃连接的守护线程，参考<code>主流程4</code></td>
+</tr>
+<tr>
+<td>logStatsThread（线程）</td>
+<td>打印连接池各项监控指标日志的守护线程，参考<code>主流程2</code>，默认关闭</td>
+</tr>
+<tr>
+<td>initedLatch（CountDownLatch）</td>
+<td>倒计数器，用来保证createConnectionThread和destroyConnectionThread两个守护线程全部开启成功。</td>
+</tr>
+<tr>
+<td>enable</td>
+<td>连接池对象是否可用，在连接池整体close后，该值为false，表示已关闭的连接池不可用。</td>
+</tr>
+<tr>
+<td>keepAlive</td>
+<td>参考<code>流程4.1</code></td>
+</tr>
+<tr>
+<td>loadSpifilterSkip</td>
+<td>是否启用通过SPI机制加载责任链上的filter，默认开启</td>
+</tr>
+</tbody></table>
+<center>表2-1</center>
+
+<h3 id="方法表-1"><a href="#方法表-1" class="headerlink" title="方法表"></a>方法表</h3><table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>init</td>
+<td>初始化整个连接池，参考<code>主流程2</code></td>
+</tr>
+<tr>
+<td>initFromSPIServiceLoader</td>
+<td>通过SPI机制加载责任链中的filters</td>
+</tr>
+<tr>
+<td>initValidConnectionChecker</td>
+<td>初始化（适配）检测器，参考<code>流程1.3</code>中的<code>init-checker</code></td>
+</tr>
+<tr>
+<td>createAndLogThread</td>
+<td>启动上面表2-1里的logStatsThread线程</td>
+</tr>
+<tr>
+<td>createAndStartCreatorThread</td>
+<td>启动上面表2-1里的createConnectionThread线程</td>
+</tr>
+<tr>
+<td>createAndStartDestroyThread</td>
+<td>启动上面表2-1里的destroyConnectionThread线程</td>
+</tr>
+<tr>
+<td>getConnection</td>
+<td>获取连接方法，参考<code>主流程1</code></td>
+</tr>
+<tr>
+<td>getConnectionDirect</td>
+<td>获取连接方法（通过getConnection触发），参考<strong>主流程1</strong></td>
+</tr>
+<tr>
+<td>pollLast</td>
+<td>真正从池子里获取连接对象的方法（通过getConnectionDirect触发），参考<code>流程1.2</code></td>
+</tr>
+<tr>
+<td>putLast</td>
+<td>真正归还连接进池子的方法（通过recycle触发），参考<code>主流程5</code></td>
+</tr>
+<tr>
+<td>put</td>
+<td>新增连接对象放进池子里的方法，通过<code>主流程3</code>触发</td>
+</tr>
+<tr>
+<td>close</td>
+<td>连接池关闭，不再提供服务，迅速干掉所有连接进入贤者模式。</td>
+</tr>
+<tr>
+<td>recycle</td>
+<td>连接回收方法，通过下面DruidPooledConnection类的close方法触发，参考<code>主流程5</code></td>
+</tr>
+<tr>
+<td>shrink</td>
+<td>连接池瘦身，参考<code>主流程4</code>、<code>流程4.1</code></td>
+</tr>
+<tr>
+<td>removeAbandoned</td>
+<td>回收长期未回收的连接，默认关闭不检查，通过<code>表1-1</code>里的removeAbandoned属性控制</td>
+</tr>
+<tr>
+<td>emptySignal</td>
+<td>触发<code>表1-1</code>里的empty执行signal，用于唤起<code>主流程3</code>新增连接</td>
+</tr>
+</tbody></table>
+<center>表2-2</center>
+
+<h2 id="DruidConnectionHolder类"><a href="#DruidConnectionHolder类" class="headerlink" title="DruidConnectionHolder类"></a>DruidConnectionHolder类</h2><p>最终存放进池子里的基本类型，该类持有驱动产生的真实Connection对象，同时提供一些连接池需要的标记性的属性。</p>
+<h3 id="属性表-2"><a href="#属性表-2" class="headerlink" title="属性表"></a>属性表</h3><table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>dataSource（DruidDataSource）</td>
+<td>本身包含一个持有自己实例的连接池对象</td>
+</tr>
+<tr>
+<td>conn（Connection）</td>
+<td>真实的驱动连接对象</td>
+</tr>
+<tr>
+<td>lastActiveTimeMillis</td>
+<td>上次活动时间，该值在归还连接时会被刷新一次，参考<code>主流程5</code>，除此之外在一句sql执行结束后，这个值也会被刷新</td>
+</tr>
+<tr>
+<td>defaultReadOnly</td>
+<td>是否默认为只读模式，默认不是</td>
+</tr>
+<tr>
+<td>defaultAutoCommit</td>
+<td>是否默认开启AutoCommit，默认开启</td>
+</tr>
+<tr>
+<td>discard</td>
+<td>当前连接是否已被抛弃</td>
+</tr>
+</tbody></table>
+<center>表3-1</center>
+
+<h3 id="方法表-2"><a href="#方法表-2" class="headerlink" title="方法表"></a>方法表</h3><table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>reset</td>
+<td>在连接对象被归还时，由于使用时可能被业务代码人为的改动一些属性（比如autoCommit等）需要把一些属性重新置为默认值，就需要该方法</td>
+</tr>
+</tbody></table>
+<center>表3-2</center>
+
+
+
+<h2 id="DruidPooledConnection类"><a href="#DruidPooledConnection类" class="headerlink" title="DruidPooledConnection类"></a>DruidPooledConnection类</h2><p>对外暴露给业务方的连接对象包装类，实际上其内部是包了一层上面的holder对象。</p>
+<h3 id="属性表-3"><a href="#属性表-3" class="headerlink" title="属性表"></a>属性表</h3><table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>conn（Connection）</td>
+<td>实际的驱动连接对象，通过下面持有的holder对象获得并赋值</td>
+</tr>
+<tr>
+<td>holder（DruidConnectionHolder）</td>
+<td>持有的holder对象</td>
+</tr>
+<tr>
+<td>disable</td>
+<td>标记是否可用</td>
+</tr>
+<tr>
+<td>ownerThread</td>
+<td>标记最初获取到自己的那个线程（用于决定在close时走下方的close还是syncClose，参考<code>主流程5</code>）</td>
+</tr>
+<tr>
+<td>closed</td>
+<td>标记是否已被关闭</td>
+</tr>
+<tr>
+<td>running</td>
+<td>标记是否正在运行中，running被置为true的地方，就是执行excute方法时。</td>
+</tr>
+<tr>
+<td>abandoned</td>
+<td>标记是否已被检查并丢弃，参考<code>流程4.2</code></td>
+</tr>
+</tbody></table>
+<center>表4-1</center>
+
+<h3 id="方法表-3"><a href="#方法表-3" class="headerlink" title="方法表"></a>方法表</h3><table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>close</td>
+<td>关闭该连接，将实际连接归还至连接池，参考<code>主流程5</code></td>
+</tr>
+<tr>
+<td>syncClose</td>
+<td>如果是别的线程执行close方法，就得启用该方法去做，该方法与上面close的区别就是加了锁控制，参考<code>流程5</code></td>
+</tr>
+<tr>
+<td>recycle</td>
+<td>实际触发datasource.recycle方法的方法，参考<code>流程5</code></td>
+</tr>
+<tr>
+<td>常规操作</td>
+<td>有createStatement、commit、rollback等等常规操作，本篇文章不涉及到，仅做连接池的说明，暂时忽略。</td>
+</tr>
+</tbody></table>
+<center>表4-2</center></div><ul class="post-copyright"><li><strong>本文标题：</strong><a href="http://yoursite.com/2019/09/20/Druid-类图-属性表/">Druid-类图-属性表</a></li><li><strong>本文作者：</strong><a href="http://yoursite.com">S</a></li><li><strong>本文链接：</strong><a href="http://yoursite.com/2019/09/20/Druid-类图-属性表/">http://yoursite.com/2019/09/20/Druid-类图-属性表/</a></li><li><strong>版权声明：</strong><span>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</span></li></ul><div><div class="recommend-post"><span class="is-size-6 has-text-grey has-mr-7"># 相关文章</span><br><span>  1.<a class="is-size-6" href="/2019/08/28/%E6%B1%A0%E5%8C%96%E6%8A%80%E6%9C%AF%EF%BC%88%E4%BA%8C%EF%BC%89HikariCP%E6%98%AF%E5%A6%82%E4%BD%95%E7%AE%A1%E7%90%86%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E7%9A%84%EF%BC%9F/" target="_blank">池化技术（二）HikariCP是如何管理数据库连接的？</a><br></span><span>  2.<a class="is-size-6" href="/2019/08/28/%E6%B1%A0%E5%8C%96%E6%8A%80%E6%9C%AF%EF%BC%88%E4%B8%80%EF%BC%89Druid%E6%98%AF%E5%A6%82%E4%BD%95%E7%AE%A1%E7%90%86%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E7%9A%84%EF%BC%9F/" target="_blank">池化技术（一）Druid是如何管理数据库连接的？</a><br></span></div></div><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/social-share.js/1.0.16/css/share.min.css"><div class="social-share"></div><script src="https://cdnjs.loli.net/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button is-info donate"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="http://myblog.sharemer.com/alipay_qrcode.png" alt="支付宝"></span></a><a class="button is-success donate"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="http://myblog.sharemer.com/wx_qrcode.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2020/05/01/%E4%BB%8E%E4%B8%80%E5%88%B0%E6%97%A0%E7%A9%B7%E5%A4%A7/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">【读书笔记】从一到无穷大</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2019/08/28/%E6%B1%A0%E5%8C%96%E6%8A%80%E6%9C%AF%EF%BC%88%E4%BA%8C%EF%BC%89HikariCP%E6%98%AF%E5%A6%82%E4%BD%95%E7%AE%A1%E7%90%86%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E7%9A%84%EF%BC%9F/"><span class="level-item">池化技术（二）HikariCP是如何管理数据库连接的？</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">评论</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/gitalk/1.6.0/gitalk.css"><script> $.getScript('/js/gitalk.min.js', function () { 
+            var gitalk = new Gitalk({
+            id: '605b25beac2977ed614b76a80025c04d',
+            repo: 'exceting.github.io',
+            owner: 'exceting',
+            clientID: '17297b562584b5cec3d7',
+            clientSecret: '46c7652ed4f09fb1d847d15df81500a5a2ceeae8',
+            admin: ["exceting"],
+            createIssueManually: true,
+            distractionFreeMode: false,
+            perPage: 10,
+            pagerDirection: 'last',
+            
+            
+            enableHotKey: true,
+            isLocked: false
+        })
+        gitalk.render('comment-container')});</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1 is-sticky"><div class="card widget toc-scroll" id="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list toc"><li><a class="is-flex toc-item" id="toc-item-DruidAbstractDataSource抽象类" href="#DruidAbstractDataSource抽象类"><span>DruidAbstractDataSource抽象类</span></a><ul class="menu-list toc"><li><a class="is-flex toc-item" id="toc-item-属性表" href="#属性表"><span>属性表</span></a></li><li><a class="is-flex toc-item" id="toc-item-方法表" href="#方法表"><span>方法表</span></a></li></ul></li><li><a class="is-flex toc-item" id="toc-item-DruidDataSource类" href="#DruidDataSource类"><span>DruidDataSource类</span></a><ul class="menu-list toc"><li><a class="is-flex toc-item" id="toc-item-属性表-1" href="#属性表-1"><span>属性表</span></a></li><li><a class="is-flex toc-item" id="toc-item-方法表-1" href="#方法表-1"><span>方法表</span></a></li></ul></li><li><a class="is-flex toc-item" id="toc-item-DruidConnectionHolder类" href="#DruidConnectionHolder类"><span>DruidConnectionHolder类</span></a><ul class="menu-list toc"><li><a class="is-flex toc-item" id="toc-item-属性表-2" href="#属性表-2"><span>属性表</span></a></li><li><a class="is-flex toc-item" id="toc-item-方法表-2" href="#方法表-2"><span>方法表</span></a></li></ul></li><li><a class="is-flex toc-item" id="toc-item-DruidPooledConnection类" href="#DruidPooledConnection类"><span>DruidPooledConnection类</span></a><ul class="menu-list toc"><li><a class="is-flex toc-item" id="toc-item-属性表-3" href="#属性表-3"><span>属性表</span></a></li><li><a class="is-flex toc-item" id="toc-item-方法表-3" href="#方法表-3"><span>方法表</span></a></li></ul></li></ul></div></div><script type="text/javascript" async>
+        $(document).ready(function () { //参考自 https://github.com/ppoffice/hexo-theme-icarus/pull/616/files
+            var observerTopMargin;
+            var scrollObserver;
+            var headerElems = $(".headerlink");
+            var activeTocItem;
+        
+            function initIntersectionObserver(docHeight) {
+                observerTopMargin = docHeight;
+                scrollObserver = new IntersectionObserver(scrollCallBack,
+                    {
+                        root: null,  // viewpoint
+                        rootMargin: docHeight + "px 0px -80% 0px"  // cover top 30% of viewport to the top of document
+                    })
+            }
+        
+            function scrollCallBack(entries, observer) {
+                if ($(window).scrollTop() > observerTopMargin * 0.7) { 
+                    // User somehow scroll to 70% of observerTopMargin (which is inited as 200% document height)
+                    // Observer top margin need to extend to cover all the space to the top of the document
+                    initIntersectionObserver(observerTopMargin * 2)
+                    observer.disconnect();
+                    return;
+                }
+                let toActive;
+                if (entries[0].intersectionRatio == 1) {  // enter viewed area
+                    let entry = entries.reduce((u, v) => (u.target.toc_id > v.target.toc_id ? u : v));  // get the lowest item
+                    toActive = $("#toc-item-" + $(entry.target).attr("href").substr(1));
+                } else {
+                    let entry = entries.reduce((u, v) => (u.target.toc_id < v.target.toc_id ? u : v));  // get the highest item
+                    let idx = Math.max(entry.target.toc_id - 1, 0);
+                    toActive = $("#toc-item-" + $(headerElems[idx]).attr("href").substr(1));
+                }
+                if (activeTocItem) activeTocItem.removeClass("is-current");
+                activeTocItem = toActive
+                activeTocItem.addClass("is-current");
+            }
+        
+            initIntersectionObserver($(document).height() * 2);
+            headerElems.each(function (index, obj) {
+                obj.toc_id = index;
+                scrollObserver.observe(obj);
+            })
+        });</script></div><div class="card widget"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="" src="http://myblog.sharemer.com/avatar.jpg" alt="S"></figure><p class="title is-size-4 is-block line-height-inherit">S</p><p class="is-size-6 is-block">随机和因果，命运与无常，兼而有之</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>上海</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">39</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">38</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">49</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/exceting" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile"><a class="level-item button is-transparent is-white is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/exceting"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-white is-marginless" target="_blank" rel="noopener" title="Bilibili" href="https://www.bilibili.com"><i class="fab fa-bilibili"></i></a><a class="level-item button is-transparent is-white is-marginless" target="_blank" rel="noopener" title="Email" href="mailto:1807301715@qq.com"><i class="fa fa-envelope"></i></a><a class="level-item button is-transparent is-white is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget"><div class="card-content"><h3 class="menu-label">最新评论</h3><span class="body_hot_comment">加载中，最新评论有1分钟缓存...</span></div></div><div class="card widget"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content size-small"><p><time dateTime="2020-05-01T05:06:00.000Z">2020-05-01</time></p><p class="title is-6"><a class="link-muted" href="/2020/05/01/%E4%BB%8E%E4%B8%80%E5%88%B0%E6%97%A0%E7%A9%B7%E5%A4%A7/">【读书笔记】从一到无穷大</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a> / <a class="link-muted" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E4%BB%8E%E4%B8%80%E5%88%B0%E6%97%A0%E7%A9%B7%E5%A4%A7/">从一到无穷大</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2019-09-20T07:53:00.000Z">2019-09-20</time></p><p class="title is-6"><a class="link-muted" href="/2019/09/20/Druid-%E7%B1%BB%E5%9B%BE-%E5%B1%9E%E6%80%A7%E8%A1%A8/">Druid-类图-属性表</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/%E6%B1%A0%E5%8C%96%E6%8A%80%E6%9C%AF/">池化技术</a> / <a class="link-muted" href="/categories/%E6%B1%A0%E5%8C%96%E6%8A%80%E6%9C%AF/%E8%BF%9E%E6%8E%A5%E6%B1%A0/">连接池</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2019-08-27T16:18:00.000Z">2019-08-28</time></p><p class="title is-6"><a class="link-muted" href="/2019/08/28/%E6%B1%A0%E5%8C%96%E6%8A%80%E6%9C%AF%EF%BC%88%E4%BA%8C%EF%BC%89HikariCP%E6%98%AF%E5%A6%82%E4%BD%95%E7%AE%A1%E7%90%86%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E7%9A%84%EF%BC%9F/">池化技术（二）HikariCP是如何管理数据库连接的？</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/%E6%B1%A0%E5%8C%96%E6%8A%80%E6%9C%AF/">池化技术</a> / <a class="link-muted" href="/categories/%E6%B1%A0%E5%8C%96%E6%8A%80%E6%9C%AF/%E8%BF%9E%E6%8E%A5%E6%B1%A0/">连接池</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2019-08-27T16:16:00.000Z">2019-08-28</time></p><p class="title is-6"><a class="link-muted" href="/2019/08/28/%E6%B1%A0%E5%8C%96%E6%8A%80%E6%9C%AF%EF%BC%88%E4%B8%80%EF%BC%89Druid%E6%98%AF%E5%A6%82%E4%BD%95%E7%AE%A1%E7%90%86%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E7%9A%84%EF%BC%9F/">池化技术（一）Druid是如何管理数据库连接的？</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/%E6%B1%A0%E5%8C%96%E6%8A%80%E6%9C%AF/">池化技术</a> / <a class="link-muted" href="/categories/%E6%B1%A0%E5%8C%96%E6%8A%80%E6%9C%AF/%E8%BF%9E%E6%8E%A5%E6%B1%A0/">连接池</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2019-07-16T15:34:00.000Z">2019-07-16</time></p><p class="title is-6"><a class="link-muted" href="/2019/07/16/%E5%88%A9%E7%94%A8Spring%E7%9A%84BeanPostProcessor%E6%9D%A5%E4%BF%AE%E6%94%B9bean%E5%B1%9E%E6%80%A7/">利用Spring的BeanPostProcessor来修改bean属性</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/%E6%A1%86%E6%9E%B6/">框架</a> / <a class="link-muted" href="/categories/%E6%A1%86%E6%9E%B6/Spring/">Spring</a> / <a class="link-muted" href="/categories/%E6%A1%86%E6%9E%B6/Spring/Framework/">Framework</a></p></div></article></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile is-marginless" href="/categories/JAVA%E5%9F%BA%E7%A1%80/"><span class="level-start"><span class="level-item">JAVA基础</span></span><span class="level-end"><span class="level-item tag">2</span></span></a><ul class="mr-0"><li><a class="level is-mobile is-marginless" href="/categories/JAVA%E5%9F%BA%E7%A1%80/JVM/"><span class="level-start"><span class="level-item">JVM</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li></ul></li><li><a class="level is-mobile is-marginless" href="/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"><span class="level-start"><span class="level-item">并发编程</span></span><span class="level-end"><span class="level-item tag">7</span></span></a><ul class="mr-0"><li><a class="level is-mobile is-marginless" href="/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/JUC/"><span class="level-start"><span class="level-item">JUC</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/ThreadLocal/"><span class="level-start"><span class="level-item">ThreadLocal</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/%E5%9B%BE%E8%A7%A3%E5%A4%9A%E7%BA%BF%E7%A8%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"><span class="level-start"><span class="level-item">图解多线程设计模式</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li></ul></li><li><a class="level is-mobile is-marginless" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"><span class="level-start"><span class="level-item">数据库</span></span><span class="level-end"><span class="level-item tag">3</span></span></a><ul class="mr-0"><li><a class="level is-mobile is-marginless" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/NoSQL/"><span class="level-start"><span class="level-item">NoSQL</span></span><span class="level-end"><span class="level-item tag">1</span></span></a><ul class="mr-0"><li><a class="level is-mobile is-marginless" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/NoSQL/Redis/"><span class="level-start"><span class="level-item">Redis</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li></ul></li><li><a class="level is-mobile is-marginless" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93/"><span class="level-start"><span class="level-item">关系型数据库</span></span><span class="level-end"><span class="level-item tag">1</span></span></a><ul class="mr-0"></ul></li></ul></li><a class="level is-mobile is-marginless" href="/categories/"><span class="level-start"><span class="level-item">查看全部&gt;&gt;</span></span></a></ul></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile is-marginless" href="/archives/2020/05/"><span class="level-start"><span class="level-item">五月 2020</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2019/09/"><span class="level-start"><span class="level-item">九月 2019</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2019/08/"><span class="level-start"><span class="level-item">八月 2019</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2019/07/"><span class="level-start"><span class="level-item">七月 2019</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2019/06/"><span class="level-start"><span class="level-item">六月 2019</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><a class="level is-mobile is-marginless" href="/archives/"><span class="level-start"><span class="level-item">查看全部&gt;&gt;</span></span></a></ul></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/NIO/"><span class="tag">NIO</span><span class="tag is-grey-lightest">8</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"><span class="tag">网络编程</span><span class="tag is-grey-lightest">8</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"><span class="tag">并发编程</span><span class="tag is-grey-lightest">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ThreadLocal/"><span class="tag">ThreadLocal</span><span class="tag is-grey-lightest">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%B1%A0%E5%8C%96%E6%8A%80%E6%9C%AF/"><span class="tag">池化技术</span><span class="tag is-grey-lightest">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%BF%9E%E6%8E%A5%E6%B1%A0/"><span class="tag">连接池</span><span class="tag is-grey-lightest">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Druid/"><span class="tag">Druid</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/JVM/"><span class="tag">JVM</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/OpenTracing/"><span class="tag">OpenTracing</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/aop/"><span class="tag">aop</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ioc/"><span class="tag">ioc</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/juc/"><span class="tag">juc</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/spring/"><span class="tag">spring</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/"><span class="tag">多线程</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"><span class="tag">数据库</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"><span class="tag">数据结构</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"><span class="tag">设计模式</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/"><span class="tag">链路追踪</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/CompletableFuture/"><span class="tag">CompletableFuture</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/GC/"><span class="tag">GC</span><span class="tag is-grey-lightest">1</span></a></div></div><div class="field is-grouped is-grouped-multiline"><a class="tags has-addons" href="/tags/"><span class="tag">查看全部&gt;&gt;</span></a></div></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">订阅更新</h3><form action="https://feedburner.google.com/fb/a/mailverify" method="post" target="popupwindow" onsubmit="window.open(&#039;https://feedburner.google.com/fb/a/mailverify?uri=removeifFeedsId&#039;,&#039;popupwindow&#039;,&#039;scrollbars=yes,width=550,height=520&#039;);return true"><input type="hidden" value="removeifFeedsId" name="uri"><input type="hidden" name="loc" value="en_US"><div class="field has-addons"><div class="control has-icons-left is-expanded"><input class="input" name="email" type="email" placeholder="Email"><span class="icon is-small is-left"><i class="fas fa-envelope"></i></span></div><div class="control"><input class="button is-primary" type="submit" value="订阅"></div></div><p class="help">输入邮箱开始订阅，更博后邮件通知！</p></form></div></div></div></div></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="http://myblog.sharemer.com/logooo.png" alt="S" height="28"></a><p class="size-small"><span>&copy; 2020 S</span>  Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>,Modify by <a href="https://github.com/removeif/hexo-theme-amazing" target="_blank">removeif</a> <br><span>© 版权说明：[本站所有内容均收集于互联网或自己创作，方便于本人记录和学习，如有侵权，请<a href="/message" target="_blank">留言</a>，我会立即处理]<br /></span><span><span id="statistic-times">loading...</span><script>function createTime(time) {
+            var n = new Date(time);
+            now.setTime(now.getTime() + 250),
+                days = (now - n) / 1e3 / 60 / 60 / 24,
+                dnum = Math.floor(days),
+                hours = (now - n) / 1e3 / 60 / 60 - 24 * dnum,
+                hnum = Math.floor(hours),
+            1 == String(hnum).length && (hnum = "0" + hnum),
+                minutes = (now - n) / 1e3 / 60 - 1440 * dnum - 60 * hnum,
+                mnum = Math.floor(minutes),
+            1 == String(mnum).length && (mnum = "0" + mnum),
+                seconds = (now - n) / 1e3 - 86400 * dnum - 3600 * hnum - 60 * mnum,
+                snum = Math.round(seconds),
+            1 == String(snum).length && (snum = "0" + snum),
+                document.getElementById("statistic-times").innerHTML = "❤️本站自 <strong>"+time.split(" ")[0].replace(/\//g,".")+"</strong> 已运行 <strong>" + dnum + "</strong> 天 <strong>" + hnum + "</strong> 小时 <strong>" + mnum + "</strong> 分 <strong>" + snum + "</strong> 秒！❤️";
+        }var now = new Date();setInterval("createTime('2018/12/29 00:00:00')", 250,"");</script><br></span><div class="size-small"><span>❤️感谢 <strong><span id="busuanzi_value_site_uv">99+</span></strong> 小伙伴的 <strong><span id="busuanzi_value_site_pv">99+</span></strong> 次光临！❤️</span></div></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/exceting"><i class="fab fa-github"></i></a></p></div><div class="sideMusic"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="/js/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script><meting-js style="width: auto;height: 2000px;" server="netease" type="playlist" id="2755914162" theme="#2980b9" loop="all" autoplay="false" order="list" storageName="aplayer-setting" lrctype="0" list-max-height="400px" fixed="true"></meting-js></div></div></div></div></footer><script src="https://cdnjs.loli.net/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            site: {
+                url: 'http://yoursite.com',
+                external_link: {"enable":true,"exclude":[]}
+            },
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="https://cdnjs.loli.net/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" defer></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back-to-top.js" defer></script><!--!--><!--!--><script src="https://cdnjs.loli.net/ajax/libs/lightgallery/1.6.12/js/lightgallery-all.min.js" defer></script><script src="https://cdnjs.loli.net/ajax/libs/justifiedGallery/3.7.0/js/jquery.justifiedGallery.min.js" defer></script><!--!--><!--!--><!--!--><script src="/js/toc.js" defer></script><script src="/js/main.js" defer></script><script>$.getScript('/js/comment-issue-data.js',function(){loadIssueData('17297b562584b5cec3d7','46c7652ed4f09fb1d847d15df81500a5a2ceeae8','exceting','exceting.github.io',false);})</script><link rel="stylesheet" href="/css/insight.css"><div class="searchbox ins-search"><div class="searchbox-container ins-search-container"><div class="searchbox-input-wrapper"><input class="searchbox-input ins-search-input" type="text" placeholder="想要查找什么..."><span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span></div><div class="searchbox-result-wrapper ins-section-wrapper"><div class="ins-section-container"></div></div></div></div><script>(function (window) {
+            var INSIGHT_CONFIG = {
+                TRANSLATION: {
+                    POSTS: '文章',
+                    PAGES: '页面',
+                    CATEGORIES: '分类',
+                    TAGS: '标签',
+                    UNTITLED: '(无标题)',
+                },
+                CONTENT_URL: '/content.json',
+            };
+            window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+        })(window);</script><script src="/js/insight.js" defer></script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.js"></script><script type="text/javascript">var pjax = new Pjax({
+            elements: "a",//代表点击链接就更新
+            selectors: [  //代表要更新的节点
+                ".section",
+                "title"
+            ],
+            cache: true,
+            cacheBust:false
+        })
+
+        function loadBusuanzi(){
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js", function () {});
+        }
+
+        // 开始 PJAX 执行的函数
+        document.addEventListener('pjax:send', function () {
+        });
+        
+        // PJAX 完成之后执行的函数，可以和上面的重载放在一起
+        document.addEventListener('pjax:complete', function () {
+            $(".section").css({opacity:1});
+            if(true){
+                $.getScript('/js/comment-issue-data.js',function(){loadIssueData('17297b562584b5cec3d7','46c7652ed4f09fb1d847d15df81500a5a2ceeae8','exceting','exceting.github.io',false);});
+            }
+            if(false){
+                loadMathJax();
+            }
+            loadMainJs(jQuery, window.moment, window.ClipboardJS, window.IcarusThemeSettings);
+            loadBackTop();
+            loadBusuanzi();
+            if(typeof loadBanner == 'function'){
+                loadBanner();
+            }
+        });</script></body></html>
