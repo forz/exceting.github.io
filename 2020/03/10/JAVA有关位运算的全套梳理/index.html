@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="generator" content="Hexo 4.2.0"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><meta name="keywords" content="[object Object]"><meta name="description" content="一、在计算机中数据是如何进行计算的？1.1：java中的byte型数据取值范围我们最开始学习java的时候知道，byte类型的数据占了8个bit位，每个位上或0或1，左边第一位表示符号位，符号位如果为1表示负数，为0则表示正数，因此要推算byte的取值范围，只需要让数值位每一位上都等于1即可。"><meta name="author" content="exceting"><title>JAVA有关位运算的全套梳理 - S</title><meta description="一、在计算机中数据是如何进行计算的？1.1：java中的byte型数据取值范围我们最开始学习java的时候知道，byte类型的数据占了8个bit位，每个位上或0或1，左边第一位表示符号位，符号位如果为1表示负数，为0则表示正数，因此要推算byte的取值范围，只需要让数值位每一位上都等于1即可。"><meta property="og:type" content="article"><meta property="og:title" content="JAVA有关位运算的全套梳理"><meta property="og:url" content="http://yoursite.com/2020/03/10/JAVA%E6%9C%89%E5%85%B3%E4%BD%8D%E8%BF%90%E7%AE%97%E7%9A%84%E5%85%A8%E5%A5%97%E6%A2%B3%E7%90%86/"><meta property="og:site_name" content="S"><meta property="og:description" content="一、在计算机中数据是如何进行计算的？1.1：java中的byte型数据取值范围我们最开始学习java的时候知道，byte类型的数据占了8个bit位，每个位上或0或1，左边第一位表示符号位，符号位如果为1表示负数，为0则表示正数，因此要推算byte的取值范围，只需要让数值位每一位上都等于1即可。"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://myblog.sharemer.com/avatar.jpg"><meta property="article:published_time" content="2020-03-09T16:51:00.000Z"><meta property="article:modified_time" content="2020-05-03T05:07:07.398Z"><meta property="article:author" content="exceting"><meta property="article:tag" content="位运算"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="http://myblog.sharemer.com/avatar.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://yoursite.com/2020/03/10/JAVA%E6%9C%89%E5%85%B3%E4%BD%8D%E8%BF%90%E7%AE%97%E7%9A%84%E5%85%A8%E5%A5%97%E6%A2%B3%E7%90%86/"},"headline":"JAVA有关位运算的全套梳理","image":["http://myblog.sharemer.com/avatar.jpg"],"datePublished":"2020-03-09T16:51:00.000Z","dateModified":"2020-05-03T05:07:07.398Z","author":{"@type":"Person","name":"exceting"},"description":"一、在计算机中数据是如何进行计算的？1.1：java中的byte型数据取值范围我们最开始学习java的时候知道，byte类型的数据占了8个bit位，每个位上或0或1，左边第一位表示符号位，符号位如果为1表示负数，为0则表示正数，因此要推算byte的取值范围，只需要让数值位每一位上都等于1即可。"}</script><link rel="alternative" href="/atom.xml" title="S" type="application/atom+xml"><link rel="icon" href="/img/favicon.png"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/font-awesome/5.12.0/css/all.min.css"><link rel="stylesheet" href="https://fonts.loli.net/css?family=Ubuntu:400,600|Source+Code+Pro|Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Microsoft YaHei:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&amp;amp;subset=latin,latin-ext|Inconsolata|Itim|Lobster.css"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/lightgallery/1.6.12/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/justifiedGallery/3.7.0/css/justifiedGallery.min.css"><!--!--><!--!--><script src="https://cdnjs.loli.net/ajax/libs/pace/1.0.2/pace.min.js"></script><link rel="stylesheet" href="/css/style.css"><script src="https://cdnjs.loli.net/ajax/libs/jquery/3.3.1/jquery.min.js"></script><script src="/js/globalUtils.js"></script></head><body class="is-3-column has-navbar-fixed-top"><nav class="navbar navbar-main is-fixed-top"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="http://myblog.sharemer.com/logooo.png" alt="S" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">首页</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">标签</a><a class="navbar-item" href="/about">关于</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/exceting"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a><a class="navbar-item" id="night-nav" title="Night Mode" href="javascript:;"><i class="fas fa-moon" id="night-icon"></i></a></div></div></div></nav><script type="text/javascript" src="/js/theme-setting.js"></script><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta size-small is-uppercase level is-mobile"><div class="level-left"><i class="far fa-calendar-plus"> </i>2020-03-10  <a class="commentCountImg" href="/2020/03/10/JAVA%E6%9C%89%E5%85%B3%E4%BD%8D%E8%BF%90%E7%AE%97%E7%9A%84%E5%85%A8%E5%A5%97%E6%A2%B3%E7%90%86/#comment-container"><span class="display-none-class">5250264a50670a804af34dac2df97b2d</span><i class="far fa-comment-dots"></i> <span class="commentCount" id="5250264a50670a804af34dac2df97b2d">99+</span>  </a><span class="level-item"><i class="far fa-clock"> </i>27 分钟  <i class="fas fa-pencil-alt"> </i>4.0k</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;&nbsp;<span id="busuanzi_value_page_pv">0</span>次访问</span></div></div><h1 class="title is-3 is-size-4-mobile">JAVA有关位运算的全套梳理</h1><div class="content"><h2 id="一、在计算机中数据是如何进行计算的？"><a href="#一、在计算机中数据是如何进行计算的？" class="headerlink" title="一、在计算机中数据是如何进行计算的？"></a>一、在计算机中数据是如何进行计算的？</h2><h3 id="1-1：java中的byte型数据取值范围"><a href="#1-1：java中的byte型数据取值范围" class="headerlink" title="1.1：java中的byte型数据取值范围"></a>1.1：java中的byte型数据取值范围</h3><p>我们最开始学习java的时候知道，byte类型的数据占了8个bit位，每个位上或0或1，左边第一位表示符号位，符号位如果为1表示负数，为0则表示正数，因此要推算byte的取值范围，只需要让数值位每一位上都等于1即可。<a id="more"></a><br>我们来用我们的常规思维来分析下byte类型的取值范围：<br><img src="http://myblog.sharemer.com/2020/03/10/20200310-1-1.png?imageView2/0/w/900" alt="图1" title="图1"></p>
+<p>如果按照这种思路来推算，七个1的二进制数转换为十进制是127，算上符号位，取值范围应为：-127<del>+127，但事实上我们知道，byte的取值范围是-128</del>127，这里先打个问号，接着往下看。</p>
+<p>现在让我们计算下byte类型的7加上byte类型的-2是多少：</p>
+<p><img src="http://myblog.sharemer.com/2020/03/10/20200310-1-2.png?imageView2/0/w/600" alt="图2" title="图2"></p>
+<p>诶？跟我们预想的不一样，因为我们是知道7和-2的和应该是5才对，结果应该表示为：00000101，但事实上通过图2的结果来看确实跟预想的不一样，所以计算机在做计算的时候，肯定不是表面上的符号位+数值位的方式进行的计算的。</p>
+<h3 id="1-2：原码，反码，补码"><a href="#1-2：原码，反码，补码" class="headerlink" title="1.2：原码，反码，补码"></a>1.2：原码，反码，补码</h3><p>我们先来看下定义：</p>
+<p>👉 <strong>原码定义：</strong>符号位加后面的数值，比如<code>图2</code>里的<code>00000111</code>和<code>10000010</code>都是原码，原码比较简单，就是我们在上面单纯理解上的原值。</p>
+<p>👉 <strong>反码定义：</strong>正数的反码就是它的原码，负数的反码符号位不变，其余数值位全部按位取反，例如：</p>
+<blockquote>
+<p><code>00000111</code>的反码：<code>00000111</code></p>
+<p><code>10000010</code>的反码：<code>11111101</code></p>
+</blockquote>
+<p>👉 <strong>补码定义：</strong>同样的，正数的补码仍然等于它的原码本身，负数的补码等于它自己的反码+1，例如：</p>
+<blockquote>
+<p><code>00000111</code>的补码：<code>00000111</code></p>
+<p><code>10000010</code>的补码：<code>11111110</code></p>
+</blockquote>
+<article class="message is-success"><div class="message-body">
+<p>🌴 总结：正数的原码、反码、补码完全一致，负数的反码等于它原码的数值位按位取反，负数的补码等于它的反码+1</p>
+</div></article>
+
+<p>现在让我们用反码的方式来计算下<code>图2</code>中的式子：</p>
+<p><img src="http://myblog.sharemer.com/2020/03/10/20200310-1-3.png?imageView2/0/w/600" alt="图3" title="图3"></p>
+<p>利用数值的反码计算出的结果已经很接近正确答案了，+4的反码等于它的原码，现在只需要让它+1就是正确答案，还记得补码的定义吗？负数的补码等于它的反码+1，那现在让我们用补码做下计算试试？</p>
+<p><img src="http://myblog.sharemer.com/2020/03/10/20200310-1-4.png?imageView2/0/w/600" alt="图4" title="图4"></p>
+<p>ok，我们发现，用它们的补码做加法，得到的数值就是我们想要的正确答案，事实上，计算机并没有减法运算器，所有的减法运算，都是以一个正数加上一个负数的形式来交给加法运算器计算的，由于负数的符号位为1，虽然我们人是知道它的含义，但是作为计算机，它是不知道第一位是符号位的，它要做的就仅仅是让两个数相加而已，正是因为如此，我们才不能简简单单保存负数，通过图4我们知道，两个数的补码相加，可以得到一个准确的数值。</p>
+<p>再举个相加结果为负数的例子，让两个负数相加：</p>
+<p><img src="http://myblog.sharemer.com/2020/03/10/20200310-1-5.png?imageView2/0/w/700" alt="图5" title="图5"></p>
+<p>如果结果为负数的话，也是适用的，只是它仍然是以补码的形式存放的，需要转成原码才符合我们人的理解方式。</p>
+<p>现在回到上面留下的问题，为什么byte的取值范围是-128~127呢？</p>
+<p>我们之前按照<code>图1</code>里的理解，理所应当的以为它应该是-127~127的范围，那是因为我们按照<code>图1</code>的理解方式，数值就是以符号位+数值位的方式理解的（也就是按照原码的方式理解的），但是你可以想一下，如果按照<code>图1</code>那种理解方式，是不是会存在两个0值呢？</p>
+<p>即：<code>10000000</code>和<code>00000000</code>，<code>+0</code>和<code>-0</code>；</p>
+<p>其次如果站在机器角度上来说，所有的负数都很大，至少要比所有正数大，因为负数的最高位也就是符号位都是1，显然这是不对的，通过本节我们知道了，所有的数均通过自己的补码完成计算，如果将最后得到的结果转成原码，就是我们人眼可以理解的最终值（符号位+数值位），如果现在利用补码的方式做理解，符号位为0的数没啥好说的，自然取值区间为：0~127，但是符号位为1的负数呢？负数就存在一个特殊值（也就是我们之前片面理解的-0）：10000000，如果按照原码理解它是-0，但我们前面说过，计算机里所有数字，都是以补码的方式参与运算的，而负数的补码不等于其原码，这个10000000在计算机里显然是某个负数的补码，那么问题就变的简单多了，即10000000是谁的补码呢？答案是：-128，这也是为什么负数的取值范围会比正数多一个的原因，byte类型如此，其它类型也是如此，比如int型的负数取值也比正数多1。</p>
+<p>这一块的定义要清晰，对理解后面的位运算会有很大的帮助。</p>
+<h2 id="二、java中的位运算"><a href="#二、java中的位运算" class="headerlink" title="二、java中的位运算"></a>二、java中的位运算</h2><h3 id="2-1：与运算"><a href="#2-1：与运算" class="headerlink" title="2.1：与运算"></a>2.1：与运算</h3><p>与运算符号：<code>&amp;</code></p>
+<p>与运算特点：<strong>1&amp;1=1、1&amp;0=0、0&amp;1=0、0&amp;0=0</strong></p>
+<p>现在我们来举一个例子：</p>
+<p><img src="http://myblog.sharemer.com/2020/03/10/20200310-1-6.png?imageView2/0/w/700" alt="图6" title="图6"></p>
+<p>让我们再来试试负数：</p>
+<p><img src="http://myblog.sharemer.com/2020/03/10/20200310-1-7.png?imageView2/0/w/700" alt="图7" title="图7"></p>
+<h3 id="2-2：或、异或"><a href="#2-2：或、异或" class="headerlink" title="2.2：或、异或"></a>2.2：或、异或</h3><p>跟与运算的运算方式一致，只不过规则不太一样：</p>
+<p>或运算符号：<code>|</code></p>
+<p>或运算规则：<strong>1|1=1、1|0=1、0|1=1、0|0=0</strong></p>
+<p>异或运算符号：<code>^</code></p>
+<p>异或运算规则：<strong>1^1=0、1^0=1、0^1=1、0^0=0</strong></p>
+<h3 id="2-3：按位取反"><a href="#2-3：按位取反" class="headerlink" title="2.3：按位取反"></a>2.3：按位取反</h3><p>取反符号：<code>~</code></p>
+<p>即一个数对自己取反，例如：</p>
+<p>某个数字<strong>a</strong>的二进制为： <code>1010110</code>，则<strong>~a</strong>为： <code>0101001</code></p>
+<h3 id="2-4：左移运算"><a href="#2-4：左移运算" class="headerlink" title="2.4：左移运算"></a>2.4：左移运算</h3><p>左移运算符：<code>&lt;&lt;</code></p>
+<p>例如：</p>
+<p><img src="http://myblog.sharemer.com/2020/03/10/20200310-1-8.png?imageView2/0/w/700" alt="图8" title="图8"></p>
+<p><strong>位运算越界&amp;数位抛弃：</strong></p>
+<p>图8中的116的二进制数的数值位为7位，符号位为0，此时如果左移超过24位，就会出现负数，为什么会这样？因为java中的位移越界时，java会抛弃高位越界部分，我们知道java里int类型的第一位是符号位，如果符号位是1，则表示其为负数，现在将数值位占7bit符号位为0的116左移24位，就会出现下方结果：</p>
+<p><code>01110100000000000000000000000000</code></p>
+<p>正好31位占全，顶至符号位，低位补0，我们称24为116的不越界的最大左移值，若超出这个值，就会越界，比如左移25位：</p>
+<p><code>11101000000000000000000000000000</code></p>
+<p>显然左移25位后会把数值位的1移动到符号位，这时它表示为一个负数的补码。根据这个规则，我们如果让其左移28位，则值为：</p>
+<p><code>01000000000000000000000000000000</code></p>
+<p>也就是十进制的1073741824，即：116 &lt;&lt; 28 = 1073741824，那如果越界过多呢？比如int型的数据，左移32位：116 &lt;&lt; 32 = 116</p>
+<p>会发现，如果左移自己位数一样多的位数，那么这个数就等于它本身，因此运算符合以下规则：</p>
+<p>设x为被位移值，y为本次位移的位数，z为x所属类型的最大存储位数：</p>
+<p><strong>x &lt;&lt; y = x &lt;&lt; (y%z)</strong></p>
+<p>如果是int型（32位，long型就用64代入计算），符合如下规则：</p>
+<article class="message is-success"><div class="message-body">
+
+<p><code>116 &lt;&lt; 4 = 116 &lt;&lt; (4%32) = 116 &lt;&lt; 4 = 1856</code></p>
+<p><code>116 &lt;&lt; 32 = 116 &lt;&lt; (32%32) = 116 &lt;&lt; 0 = 116</code></p>
+<p><code>116 &lt;&lt; 36 = 116 &lt;&lt; (36%32) = 116 &lt;&lt; 4 = 1856</code></p>
+</div></article>
+
+<h3 id="2-5：有符号右移运算-amp-无符号右移运算"><a href="#2-5：有符号右移运算-amp-无符号右移运算" class="headerlink" title="2.5：有符号右移运算&amp;无符号右移运算"></a>2.5：有符号右移运算&amp;无符号右移运算</h3><p>有符号右移运算符：<code>&gt;&gt;</code></p>
+<p>无符号右移运算符：<code>&gt;&gt;&gt;</code></p>
+<p>例如：a &gt;&gt; b表示a右移b位，跟上面的左移例子一样，右移也会有越界问题，只是右移越界是从右边开始抛弃越界部分的，右移操作有符号位干扰，如果是正数右移，无此干扰项，因为符号位本就是0右移不会影响值的准确性，但如果是负数，第一位是符号位，且值为1，右移就有影响了，现在仍然以116为例：</p>
+<p>正数右移：</p>
+<p><img src="http://myblog.sharemer.com/2020/03/10/20200310-1-9.png?imageView2/0/w/600" alt="图9" title="图9"></p>
+<p>上述是正数，右移无影响，但是负数，这里以-116为例，我们知道负数在计算机里是以补码的形式存储的，所以图里直接用-116的补码做运算，位移过程如下：</p>
+<p><img src="http://myblog.sharemer.com/2020/03/10/20200310-1-10.png?imageView2/0/w/600" alt="图10" title="图10"></p>
+<p>你会发现右移跟左移不一样，左移是不用担心自己符号位存在“补位”问题的，但是右移存在，如图中-116右移4位后，左边第一位，也就是符号位，就面临着补位的问题，那我现在是该补1呢，还是补0呢？这也就是为什么右移操作会存在有符号右移和无符号右移两种移动方式：</p>
+<article class="message is-success"><div class="message-body">
+
+<p><strong>☘️ 有符号右移：</strong>依照原符号位，如果原符号位是1，那么图4里需要补位的空位全部补1，如果原符号位为0，则全部补0</p>
+<p><strong>☘️ 无符号右移：</strong>无视原符号位，全部补0</p>
+</div></article>
+
+<p>现在让我们用有符号的方式将-116右移4位，即-116 &gt;&gt; 4，按照有符号的规则，补位符合原符号位，则右边4位全部补1：</p>
+<p><img src="http://myblog.sharemer.com/2020/03/10/20200310-1-11.png?imageView2/0/w/600" alt="图11" title="图11"></p>
+<p>得到的仍然是个负数，它仍然是一个补码，图里展示不开，它的结果为：<code>11111111111111111111111111111000</code>，经转换可知它是-8的补码，即：<strong>-116 &gt;&gt; 4 = -8</strong></p>
+<p>现在再试试用无符号右移，根据无符号的特点，右移后的前四位无脑补0：</p>
+<p><img src="http://myblog.sharemer.com/2020/03/10/20200310-1-12.png?imageView2/0/w/600" alt="图12" title="图12"></p>
+<p>图里展示不开，它的结果为：<code>00001111111111111111111111111000</code></p>
+<p>可见它是个正数，转换成十进制为：268435448，即：<strong>-116 &gt;&gt;&gt; 4 = 268435448</strong></p>
+<p>最后说一下，跟左移一样，右移里不管是有符号还是无符号，也符合取余的方式，计算出位移的最终位数：</p>
+<article class="message is-success"><div class="message-body">
+
+<p><code>-116 &gt;&gt; 4 = -116 &gt;&gt; (4%32) = -116 &gt;&gt; 4 = -8</code></p>
+<p><code>-116 &gt;&gt; 32 = -116 &gt;&gt; (32%32) = -116 &gt;&gt; 0 = -116</code></p>
+<p><code>-116 &gt;&gt; 36 = -116 &gt;&gt; (36%32) = -116 &gt;&gt; 4 = -8</code></p>
+</div></article>
+
+<h3 id="2-6：类型转换溢出"><a href="#2-6：类型转换溢出" class="headerlink" title="2.6：类型转换溢出"></a>2.6：类型转换溢出</h3><p>了解完位运算，来看一个比较实际的问题，看下面的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">long</span> a = <span class="number">8934567890233345621L</span>;</span><br><span class="line"><span class="keyword">int</span> b = (<span class="keyword">int</span>) a; <span class="comment">//b的值为-1493678507</span></span><br></pre></td></tr></table></figure>
+
+<p>最终b的值是一个负数，这是由于long型64位，让int型强行接收，会出现位溢出的问题，这个流程如下：</p>
+<p><img src="http://myblog.sharemer.com/2020/03/10/20200310-1-13.png?imageView2/0/w/1000" alt="图13" title="图13"></p>
+<h2 id="三、位运算在实际项目中的运用"><a href="#三、位运算在实际项目中的运用" class="headerlink" title="三、位运算在实际项目中的运用"></a>三、位运算在实际项目中的运用</h2><p>位运算的性能是非常好的，相比运算流程，计算机更喜欢这种纯粹的逻辑门和移动位置的运算，但位运算在平常的业务代码里并不太常见，因为它的可读性不太好，但是我们仍然可以利用位运算来解决一些实际项目里的问题。</p>
+<p>比如用来表示开关的功能，比如需求里经常有这种字段：是否允许xx（0不允许，1允许），是否有yy权限（0没有，1有），是否存在zz（0不存在，1存在）</p>
+<p>上面只是举例，类似这种只有两种取值状态的属性，如果当成数据库字段放进去的话，太过浪费，如果之后又有类似的字段，又得新增数据库字段，为了只有两种取值的字段，实在是不太值得。</p>
+<p>这个时候何不用一个字段来表示这些字段呢？你可能已经猜到要怎么做了：</p>
+<p><img src="http://myblog.sharemer.com/2020/03/10/20200310-1-14.png?imageView2/0/w/800" alt="图14" title="图14"></p>
+<p>顶一个int型或者long型的字段，让它的每一个二进制位拥有特殊含义即可，然后按照位运算将其对应的位置上的数值变成0或1，那如何将某个数的二进制位第x位上的数值变成1或0呢？其实这在位图结构里经常用到，就是利用1这个特殊的值作位移运算后再与原值进行位运算，让我们看下这个过程：</p>
+<p>把一个数的第2位的字符变成1，现在假设这个数初始化为0，int型，我们把它当成二进制展示出来：</p>
+<p><img src="http://myblog.sharemer.com/2020/03/10/20200310-1-15.png?imageView2/0/w/1000" alt="图15" title="图15"></p>
+<p>现在如何把这个数的第二位变成1呢？目前是这样做的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span> | <span class="number">1</span> &lt;&lt; <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>即原值跟1左移1位后的值作或运算，先来看看<code>1 &lt;&lt; 1</code>的结果：</p>
+<p><img src="http://myblog.sharemer.com/2020/03/10/20200310-1-16.png?imageView2/0/w/1000" alt="图16" title="图16"></p>
+<p>然后拿着<code>图16</code>的结果，跟<code>原数</code>（也就是0）进行<code>或运算</code>：</p>
+<p><img src="http://myblog.sharemer.com/2020/03/10/20200310-1-17.png?imageView2/0/w/1000" alt="图17" title="图17"></p>
+<p>可以看到，原数的第二位已经被置为1了，它的十进制对应2，其它位的数置为1也大同小异，例如，现在让第6位也变成1只需要：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2</span> | <span class="number">1</span> &lt;&lt; <span class="number">5</span></span><br></pre></td></tr></table></figure>
+
+<p>即拿着原值（现在为2）跟1左移5位后的数做或运算，这个流程如下：</p>
+<p><img src="http://myblog.sharemer.com/2020/03/10/20200310-1-18.png?imageView2/0/w/1024" alt="图18" title="图18"></p>
+<p>看完了把某个位置的数值置为1，那如何把某位设置为0呢？我们现在把<code>图18</code>里的结果的第6位重新置回0，目前的做法为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">34</span> &amp; ~(<span class="number">1</span> &lt;&lt; <span class="number">5</span>)</span><br></pre></td></tr></table></figure>
+
+<p>即拿着原值（经过上面几步的运算，现在值为34）跟1左移5位按位取反后的数做与运算，来看下这个流程：</p>
+<p><img src="http://myblog.sharemer.com/2020/03/10/20200310-1-19.png?imageView2/0/w/1024" alt="图19" title="图19"></p>
+<p>经过上面的流程，就可以把原值的第6位变成0了。</p>
+<p>那么我们知道了让一个数的二进制位的某位变成0或1的方法，那如何知道一个数的某位上究竟是0还是1呢？毕竟我们业务代码需要知道第几位代表什么意思并且获取到对应位置上的值。</p>
+<p>假如我现在想知道十进制int型数34的第6位是0还是1，写法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">34</span> &gt;&gt; <span class="number">5</span> &amp; <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>即让原值（34）右移5位后跟1做与运算，来看下这个流程：</p>
+<p><img src="http://myblog.sharemer.com/2020/03/10/20200310-1-20.png?imageView2/0/w/1024" alt="图20" title="图20"></p>
+<p>由图可以看出，想要知道一个数的第几位是1还是0，只需要将其对应位置上的值“逼”到最后一位，然后跟1相与即可，如果对应位置上的值是0，那么与1相与后的结果一定为0，反之一定为1.</p>
+<article class="message is-success"><div class="message-body">
+
+<p><strong>☘️ 总结</strong></p>
+<p>到这里已经说完了为什么要用一个数表示那么多开关，以及如何给一个开关位设置对应的开关值，以及如何找到对应开关位的值，有了这些操作，我们再也不需要为这种只有0和1取值的字段新增数据库字段了，因为一个int型的数字，就可以表达32个开关属性，如果超了，还可以扩成64位的long型~</p>
+</div></article></div><ul class="post-copyright"><li><strong>本文标题：</strong><a href="http://yoursite.com/2020/03/10/JAVA有关位运算的全套梳理/">JAVA有关位运算的全套梳理</a></li><li><strong>本文作者：</strong><a href="http://yoursite.com">S</a></li><li><strong>本文链接：</strong><a href="http://yoursite.com/2020/03/10/JAVA有关位运算的全套梳理/">http://yoursite.com/2020/03/10/JAVA有关位运算的全套梳理/</a></li><li><strong>版权声明：</strong><span>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</span></li></ul><div></div><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/social-share.js/1.0.16/css/share.min.css"><div class="social-share"></div><script src="https://cdnjs.loli.net/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button is-info donate"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="http://myblog.sharemer.com/alipay_qrcode.png" alt="支付宝"></span></a><a class="button is-success donate"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="http://myblog.sharemer.com/wx_qrcode.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2019/12/13/IDEA%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E8%A1%A8%E5%8D%95demo/"><span class="level-item">IDEA插件开发（一）一个简单的表单demo</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">评论</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/gitalk/1.6.0/gitalk.css"><script> $.getScript('/js/gitalk.min.js', function () { 
+            var gitalk = new Gitalk({
+            id: '5250264a50670a804af34dac2df97b2d',
+            repo: 'exceting.github.io',
+            owner: 'exceting',
+            clientID: '17297b562584b5cec3d7',
+            clientSecret: '46c7652ed4f09fb1d847d15df81500a5a2ceeae8',
+            admin: ["exceting"],
+            createIssueManually: true,
+            distractionFreeMode: false,
+            perPage: 10,
+            pagerDirection: 'last',
+            
+            
+            enableHotKey: true,
+            isLocked: false
+        })
+        gitalk.render('comment-container')});</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1 is-sticky"><div class="card widget toc-scroll" id="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list toc"><li><a class="is-flex toc-item" id="toc-item-一、在计算机中数据是如何进行计算的？" href="#一、在计算机中数据是如何进行计算的？"><span>一、在计算机中数据是如何进行计算的？</span></a><ul class="menu-list toc"><li><a class="is-flex toc-item" id="toc-item-1-1：java中的byte型数据取值范围" href="#1-1：java中的byte型数据取值范围"><span>1.1：java中的byte型数据取值范围</span></a></li><li><a class="is-flex toc-item" id="toc-item-1-2：原码，反码，补码" href="#1-2：原码，反码，补码"><span>1.2：原码，反码，补码</span></a></li></ul></li><li><a class="is-flex toc-item" id="toc-item-二、java中的位运算" href="#二、java中的位运算"><span>二、java中的位运算</span></a><ul class="menu-list toc"><li><a class="is-flex toc-item" id="toc-item-2-1：与运算" href="#2-1：与运算"><span>2.1：与运算</span></a></li><li><a class="is-flex toc-item" id="toc-item-2-2：或、异或" href="#2-2：或、异或"><span>2.2：或、异或</span></a></li><li><a class="is-flex toc-item" id="toc-item-2-3：按位取反" href="#2-3：按位取反"><span>2.3：按位取反</span></a></li><li><a class="is-flex toc-item" id="toc-item-2-4：左移运算" href="#2-4：左移运算"><span>2.4：左移运算</span></a></li><li><a class="is-flex toc-item" id="toc-item-2-5：有符号右移运算-amp-无符号右移运算" href="#2-5：有符号右移运算-amp-无符号右移运算"><span>2.5：有符号右移运算&amp;amp;无符号右移运算</span></a></li><li><a class="is-flex toc-item" id="toc-item-2-6：类型转换溢出" href="#2-6：类型转换溢出"><span>2.6：类型转换溢出</span></a></li></ul></li><li><a class="is-flex toc-item" id="toc-item-三、位运算在实际项目中的运用" href="#三、位运算在实际项目中的运用"><span>三、位运算在实际项目中的运用</span></a></li></ul></div></div><script type="text/javascript" async>
+        $(document).ready(function () { //参考自 https://github.com/ppoffice/hexo-theme-icarus/pull/616/files
+            var observerTopMargin;
+            var scrollObserver;
+            var headerElems = $(".headerlink");
+            var activeTocItem;
+        
+            function initIntersectionObserver(docHeight) {
+                observerTopMargin = docHeight;
+                scrollObserver = new IntersectionObserver(scrollCallBack,
+                    {
+                        root: null,  // viewpoint
+                        rootMargin: docHeight + "px 0px -80% 0px"  // cover top 30% of viewport to the top of document
+                    })
+            }
+        
+            function scrollCallBack(entries, observer) {
+                if ($(window).scrollTop() > observerTopMargin * 0.7) { 
+                    // User somehow scroll to 70% of observerTopMargin (which is inited as 200% document height)
+                    // Observer top margin need to extend to cover all the space to the top of the document
+                    initIntersectionObserver(observerTopMargin * 2)
+                    observer.disconnect();
+                    return;
+                }
+                let toActive;
+                if (entries[0].intersectionRatio == 1) {  // enter viewed area
+                    let entry = entries.reduce((u, v) => (u.target.toc_id > v.target.toc_id ? u : v));  // get the lowest item
+                    toActive = $("#toc-item-" + $(entry.target).attr("href").substr(1));
+                } else {
+                    let entry = entries.reduce((u, v) => (u.target.toc_id < v.target.toc_id ? u : v));  // get the highest item
+                    let idx = Math.max(entry.target.toc_id - 1, 0);
+                    toActive = $("#toc-item-" + $(headerElems[idx]).attr("href").substr(1));
+                }
+                if (activeTocItem) activeTocItem.removeClass("is-current");
+                activeTocItem = toActive
+                activeTocItem.addClass("is-current");
+            }
+        
+            initIntersectionObserver($(document).height() * 2);
+            headerElems.each(function (index, obj) {
+                obj.toc_id = index;
+                scrollObserver.observe(obj);
+            })
+        });</script></div><div class="card widget"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="" src="http://myblog.sharemer.com/avatar.jpg" alt="S"></figure><p class="title is-size-4 is-block line-height-inherit">S</p><p class="is-size-6 is-block">随机和因果，命运与无常，兼而有之</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>上海</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">42</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">35</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">55</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/exceting" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile"><a class="level-item button is-transparent is-white is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/exceting"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-white is-marginless" target="_blank" rel="noopener" title="Bilibili" href="https://www.bilibili.com"><i class="fab fa-bilibili"></i></a><a class="level-item button is-transparent is-white is-marginless" target="_blank" rel="noopener" title="Email" href="mailto:1807301715@qq.com"><i class="fa fa-envelope"></i></a><a class="level-item button is-transparent is-white is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget"><div class="card-content"><h3 class="menu-label">最新评论</h3><span class="body_hot_comment">加载中，最新评论有1分钟缓存...</span></div></div><div class="card widget"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content size-small"><p><time dateTime="2020-03-09T16:51:00.000Z">2020-03-10</time></p><p class="title is-6"><a class="link-muted" href="/2020/03/10/JAVA%E6%9C%89%E5%85%B3%E4%BD%8D%E8%BF%90%E7%AE%97%E7%9A%84%E5%85%A8%E5%A5%97%E6%A2%B3%E7%90%86/">JAVA有关位运算的全套梳理</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/JAVA%E5%9F%BA%E7%A1%80/">JAVA基础</a> / <a class="link-muted" href="/categories/JAVA%E5%9F%BA%E7%A1%80/JAVA%E8%BF%9B%E5%8C%96%E8%AE%BA/">JAVA进化论</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2019-12-13T04:52:00.000Z">2019-12-13</time></p><p class="title is-6"><a class="link-muted" href="/2019/12/13/IDEA%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E8%A1%A8%E5%8D%95demo/">IDEA插件开发（一）一个简单的表单demo</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/IDEA%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91/">IDEA插件开发</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2019-12-10T13:58:00.000Z">2019-12-10</time></p><p class="title is-6"><a class="link-muted" href="/2019/12/10/Resilience4j%E7%86%94%E6%96%AD%E5%99%A8-%E4%BD%BF%E7%94%A8%E4%B8%8E%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">Resilience4j熔断器-使用与源码解析</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/">服务治理</a> / <a class="link-muted" href="/categories/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/%E7%86%94%E6%96%AD/">熔断</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2019-10-24T15:01:00.000Z">2019-10-24</time></p><p class="title is-6"><a class="link-muted" href="/2019/10/24/%E5%B7%A5%E4%BD%9C%E4%B8%AD%E6%9C%89%E5%85%B3%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98%E7%9A%84%E4%BD%BF%E7%94%A8%E5%92%8C%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E9%97%AE%E9%A2%98%E6%A2%B3%E7%90%86/">工作中有关分布式缓存的使用和需要注意的问题梳理</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/DB/">DB</a> / <a class="link-muted" href="/categories/DB/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/">分布式缓存</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2019-09-20T07:53:00.000Z">2019-09-20</time></p><p class="title is-6"><a class="link-muted" href="/2019/09/20/Druid-%E7%B1%BB%E5%9B%BE-%E5%B1%9E%E6%80%A7%E8%A1%A8/">Druid-类图-属性表</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/%E6%B1%A0%E5%8C%96%E6%8A%80%E6%9C%AF/">池化技术</a> / <a class="link-muted" href="/categories/%E6%B1%A0%E5%8C%96%E6%8A%80%E6%9C%AF/%E8%BF%9E%E6%8E%A5%E6%B1%A0/">连接池</a></p></div></article></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile is-marginless" href="/categories/DB/"><span class="level-start"><span class="level-item">DB</span></span><span class="level-end"><span class="level-item tag">4</span></span></a><ul class="mr-0"><li><a class="level is-mobile is-marginless" href="/categories/DB/InfluxDB/"><span class="level-start"><span class="level-item">InfluxDB</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/DB/MySQL/"><span class="level-start"><span class="level-item">MySQL</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/DB/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/"><span class="level-start"><span class="level-item">分布式缓存</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li></ul></li><li><a class="level is-mobile is-marginless" href="/categories/IDEA%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91/"><span class="level-start"><span class="level-item">IDEA插件开发</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/JAVA%E5%9F%BA%E7%A1%80/"><span class="level-start"><span class="level-item">JAVA基础</span></span><span class="level-end"><span class="level-item tag">3</span></span></a><ul class="mr-0"><li><a class="level is-mobile is-marginless" href="/categories/JAVA%E5%9F%BA%E7%A1%80/JAVA%E8%BF%9B%E5%8C%96%E8%AE%BA/"><span class="level-start"><span class="level-item">JAVA进化论</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/JAVA%E5%9F%BA%E7%A1%80/JVM/"><span class="level-start"><span class="level-item">JVM</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li></ul></li><li><a class="level is-mobile is-marginless" href="/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"><span class="level-start"><span class="level-item">并发编程</span></span><span class="level-end"><span class="level-item tag">7</span></span></a><ul class="mr-0"><li><a class="level is-mobile is-marginless" href="/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/JUC/"><span class="level-start"><span class="level-item">JUC</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li></ul></li><a class="level is-mobile is-marginless" href="/categories/"><span class="level-start"><span class="level-item">查看全部&gt;&gt;</span></span></a></ul></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile is-marginless" href="/archives/2020/03/"><span class="level-start"><span class="level-item">三月 2020</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2019/12/"><span class="level-start"><span class="level-item">十二月 2019</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2019/10/"><span class="level-start"><span class="level-item">十月 2019</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2019/09/"><span class="level-start"><span class="level-item">九月 2019</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2019/08/"><span class="level-start"><span class="level-item">八月 2019</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><a class="level is-mobile is-marginless" href="/archives/"><span class="level-start"><span class="level-item">查看全部&gt;&gt;</span></span></a></ul></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/NIO/"><span class="tag">NIO</span><span class="tag is-grey-lightest">8</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"><span class="tag">网络编程</span><span class="tag is-grey-lightest">8</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"><span class="tag">并发编程</span><span class="tag is-grey-lightest">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ThreadLocal/"><span class="tag">ThreadLocal</span><span class="tag is-grey-lightest">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%B1%A0%E5%8C%96%E6%8A%80%E6%9C%AF/"><span class="tag">池化技术</span><span class="tag is-grey-lightest">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%BF%9E%E6%8E%A5%E6%B1%A0/"><span class="tag">连接池</span><span class="tag is-grey-lightest">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Druid/"><span class="tag">Druid</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/JVM/"><span class="tag">JVM</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/OpenTracing/"><span class="tag">OpenTracing</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/aop/"><span class="tag">aop</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ioc/"><span class="tag">ioc</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/juc/"><span class="tag">juc</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/redis/"><span class="tag">redis</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/spring/"><span class="tag">spring</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/"><span class="tag">分布式缓存</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/"><span class="tag">多线程</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"><span class="tag">数据库</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"><span class="tag">数据结构</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"><span class="tag">设计模式</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/"><span class="tag">链路追踪</span><span class="tag is-grey-lightest">2</span></a></div></div><div class="field is-grouped is-grouped-multiline"><a class="tags has-addons" href="/tags/"><span class="tag">查看全部&gt;&gt;</span></a></div></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">订阅更新</h3><form action="https://feedburner.google.com/fb/a/mailverify" method="post" target="popupwindow" onsubmit="window.open(&#039;https://feedburner.google.com/fb/a/mailverify?uri=removeifFeedsId&#039;,&#039;popupwindow&#039;,&#039;scrollbars=yes,width=550,height=520&#039;);return true"><input type="hidden" value="removeifFeedsId" name="uri"><input type="hidden" name="loc" value="en_US"><div class="field has-addons"><div class="control has-icons-left is-expanded"><input class="input" name="email" type="email" placeholder="Email"><span class="icon is-small is-left"><i class="fas fa-envelope"></i></span></div><div class="control"><input class="button is-primary" type="submit" value="订阅"></div></div><p class="help">输入邮箱开始订阅，更博后邮件通知！</p></form></div></div></div></div></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="http://myblog.sharemer.com/logooo.png" alt="S" height="28"></a><p class="size-small"><span>&copy; 2020 S</span>  Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>,Modify by <a href="https://github.com/removeif/hexo-theme-amazing" target="_blank">removeif</a> <br><span>© 版权说明：[本站所有内容均收集于互联网或自己创作，方便于本人记录和学习，如有侵权，请<a href="/message" target="_blank">留言</a>，我会立即处理]<br /></span><span><span id="statistic-times">loading...</span><script>function createTime(time) {
+            var n = new Date(time);
+            now.setTime(now.getTime() + 250),
+                days = (now - n) / 1e3 / 60 / 60 / 24,
+                dnum = Math.floor(days),
+                hours = (now - n) / 1e3 / 60 / 60 - 24 * dnum,
+                hnum = Math.floor(hours),
+            1 == String(hnum).length && (hnum = "0" + hnum),
+                minutes = (now - n) / 1e3 / 60 - 1440 * dnum - 60 * hnum,
+                mnum = Math.floor(minutes),
+            1 == String(mnum).length && (mnum = "0" + mnum),
+                seconds = (now - n) / 1e3 - 86400 * dnum - 3600 * hnum - 60 * mnum,
+                snum = Math.round(seconds),
+            1 == String(snum).length && (snum = "0" + snum),
+                document.getElementById("statistic-times").innerHTML = "❤️本站自 <strong>"+time.split(" ")[0].replace(/\//g,".")+"</strong> 已运行 <strong>" + dnum + "</strong> 天 <strong>" + hnum + "</strong> 小时 <strong>" + mnum + "</strong> 分 <strong>" + snum + "</strong> 秒！❤️";
+        }var now = new Date();setInterval("createTime('2018/12/29 00:00:00')", 250,"");</script><br></span><div class="size-small"><span>❤️感谢 <strong><span id="busuanzi_value_site_uv">99+</span></strong> 小伙伴的 <strong><span id="busuanzi_value_site_pv">99+</span></strong> 次光临！❤️</span></div></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/exceting"><i class="fab fa-github"></i></a></p></div><div class="sideMusic"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="/js/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script><meting-js style="width: auto;height: 2000px;" server="netease" type="playlist" id="2755914162" theme="#2980b9" loop="all" autoplay="false" order="list" storageName="aplayer-setting" lrctype="0" list-max-height="400px" fixed="true"></meting-js></div></div></div></div></footer><script src="https://cdnjs.loli.net/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            site: {
+                url: 'http://yoursite.com',
+                external_link: {"enable":true,"exclude":[]}
+            },
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="https://cdnjs.loli.net/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" defer></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back-to-top.js" defer></script><!--!--><!--!--><script src="https://cdnjs.loli.net/ajax/libs/lightgallery/1.6.12/js/lightgallery-all.min.js" defer></script><script src="https://cdnjs.loli.net/ajax/libs/justifiedGallery/3.7.0/js/jquery.justifiedGallery.min.js" defer></script><!--!--><!--!--><!--!--><script src="/js/toc.js" defer></script><script src="/js/main.js" defer></script><script>$.getScript('/js/comment-issue-data.js',function(){loadIssueData('17297b562584b5cec3d7','46c7652ed4f09fb1d847d15df81500a5a2ceeae8','exceting','exceting.github.io',false);})</script><link rel="stylesheet" href="/css/insight.css"><div class="searchbox ins-search"><div class="searchbox-container ins-search-container"><div class="searchbox-input-wrapper"><input class="searchbox-input ins-search-input" type="text" placeholder="想要查找什么..."><span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span></div><div class="searchbox-result-wrapper ins-section-wrapper"><div class="ins-section-container"></div></div></div></div><script>(function (window) {
+            var INSIGHT_CONFIG = {
+                TRANSLATION: {
+                    POSTS: '文章',
+                    PAGES: '页面',
+                    CATEGORIES: '分类',
+                    TAGS: '标签',
+                    UNTITLED: '(无标题)',
+                },
+                CONTENT_URL: '/content.json',
+            };
+            window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+        })(window);</script><script src="/js/insight.js" defer></script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.js"></script><script type="text/javascript">var pjax = new Pjax({
+            elements: "a",//代表点击链接就更新
+            selectors: [  //代表要更新的节点
+                ".section",
+                "title"
+            ],
+            cache: true,
+            cacheBust:false
+        })
+
+        function loadBusuanzi(){
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js", function () {});
+        }
+
+        // 开始 PJAX 执行的函数
+        document.addEventListener('pjax:send', function () {
+        });
+        
+        // PJAX 完成之后执行的函数，可以和上面的重载放在一起
+        document.addEventListener('pjax:complete', function () {
+            $(".section").css({opacity:1});
+            if(true){
+                $.getScript('/js/comment-issue-data.js',function(){loadIssueData('17297b562584b5cec3d7','46c7652ed4f09fb1d847d15df81500a5a2ceeae8','exceting','exceting.github.io',false);});
+            }
+            if(false){
+                loadMathJax();
+            }
+            loadMainJs(jQuery, window.moment, window.ClipboardJS, window.IcarusThemeSettings);
+            loadBackTop();
+            loadBusuanzi();
+            if(typeof loadBanner == 'function'){
+                loadBanner();
+            }
+        });</script></body></html>
