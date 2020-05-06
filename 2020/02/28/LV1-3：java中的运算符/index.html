@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="generator" content="Hexo 4.2.0"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><meta name="keywords" content="[object Object]"><meta name="description" content="一、运算符1.1：算术运算符算术运算符主要包含："><meta name="author" content="exceting"><title>LV1-3：java中的运算符 - S</title><meta description="一、运算符1.1：算术运算符算术运算符主要包含："><meta property="og:type" content="article"><meta property="og:title" content="LV1-3：java中的运算符"><meta property="og:url" content="http://yoursite.com/2020/02/28/LV1-3%EF%BC%9Ajava%E4%B8%AD%E7%9A%84%E8%BF%90%E7%AE%97%E7%AC%A6/"><meta property="og:site_name" content="S"><meta property="og:description" content="一、运算符1.1：算术运算符算术运算符主要包含："><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://myblog.sharemer.com/avatar.jpg"><meta property="article:published_time" content="2020-02-28T12:20:00.000Z"><meta property="article:modified_time" content="2020-05-06T16:47:07.592Z"><meta property="article:author" content="exceting"><meta property="article:tag" content="教程"><meta property="article:tag" content="基础知识"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="http://myblog.sharemer.com/avatar.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://yoursite.com/2020/02/28/LV1-3%EF%BC%9Ajava%E4%B8%AD%E7%9A%84%E8%BF%90%E7%AE%97%E7%AC%A6/"},"headline":"LV1-3：java中的运算符","image":["http://myblog.sharemer.com/avatar.jpg"],"datePublished":"2020-02-28T12:20:00.000Z","dateModified":"2020-05-06T16:47:07.592Z","author":{"@type":"Person","name":"exceting"},"description":"一、运算符1.1：算术运算符算术运算符主要包含："}</script><link rel="alternative" href="/atom.xml" title="S" type="application/atom+xml"><link rel="icon" href="/img/favicon.png"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/font-awesome/5.12.0/css/all.min.css"><link rel="stylesheet" href="https://fonts.loli.net/css?family=Ubuntu:400,600|Source+Code+Pro|Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Microsoft YaHei:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&amp;amp;subset=latin,latin-ext|Inconsolata|Itim|Lobster.css"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/lightgallery/1.6.12/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/justifiedGallery/3.7.0/css/justifiedGallery.min.css"><!--!--><!--!--><script src="https://cdnjs.loli.net/ajax/libs/pace/1.0.2/pace.min.js"></script><link rel="stylesheet" href="/css/style.css"><script src="https://cdnjs.loli.net/ajax/libs/jquery/3.3.1/jquery.min.js"></script><script src="/js/globalUtils.js"></script></head><body class="is-3-column has-navbar-fixed-top"><nav class="navbar navbar-main is-fixed-top"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="http://myblog.sharemer.com/logooo.png" alt="S" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">首页</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">标签</a><a class="navbar-item" href="/about">关于</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/exceting"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a><a class="navbar-item" id="night-nav" title="Night Mode" href="javascript:;"><i class="fas fa-moon" id="night-icon"></i></a></div></div></div></nav><script type="text/javascript" src="/js/theme-setting.js"></script><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta size-small is-uppercase level is-mobile"><div class="level-left"><i class="far fa-calendar-plus"> </i>2020-02-28  <a class="commentCountImg" href="/2020/02/28/LV1-3%EF%BC%9Ajava%E4%B8%AD%E7%9A%84%E8%BF%90%E7%AE%97%E7%AC%A6/#comment-container"><span class="display-none-class">3c3cf89511d4bc24c6a575b513e4f707</span><i class="far fa-comment-dots"></i> <span class="commentCount" id="3c3cf89511d4bc24c6a575b513e4f707">99+</span>  </a><span class="level-item"><i class="far fa-clock"> </i>34 分钟  <i class="fas fa-pencil-alt"> </i>5.1k</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;&nbsp;<span id="busuanzi_value_page_pv">0</span>次访问</span></div></div><h1 class="title is-3 is-size-4-mobile">LV1-3：java中的运算符</h1><div class="content"><h2 id="一、运算符"><a href="#一、运算符" class="headerlink" title="一、运算符"></a>一、运算符</h2><h3 id="1-1：算术运算符"><a href="#1-1：算术运算符" class="headerlink" title="1.1：算术运算符"></a>1.1：算术运算符</h3><p>算术运算符主要包含：</p>
+<a id="more"></a>
+
+<table>
+<thead>
+<tr>
+<th align="left">运算符</th>
+<th align="left">说明</th>
+<th align="left">示例</th>
+<th align="left">备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">+</td>
+<td align="left">加法</td>
+<td align="left"><code>a + b</code></td>
+<td align="left">计算变量间的和</td>
+</tr>
+<tr>
+<td align="left">-</td>
+<td align="left">减法</td>
+<td align="left"><code>a - b</code></td>
+<td align="left">计算变量间的差</td>
+</tr>
+<tr>
+<td align="left">*</td>
+<td align="left">乘法</td>
+<td align="left"><code>a * b</code></td>
+<td align="left">计算变量间的积</td>
+</tr>
+<tr>
+<td align="left">/</td>
+<td align="left">除法</td>
+<td align="left"><code>a / b</code></td>
+<td align="left">计算变量间的商</td>
+</tr>
+<tr>
+<td align="left">%</td>
+<td align="left">取余</td>
+<td align="left"><code>a % b</code></td>
+<td align="left">计算变量间的余</td>
+</tr>
+<tr>
+<td align="left">++</td>
+<td align="left">自增1</td>
+<td align="left"><code>a++</code> 或 <code>++a</code></td>
+<td align="left">等效于：a = a + 1; 或者 a += 1;(+=在下面赋值运算符会介绍)++放变量前面和后面，是有区别的，具体请参考第二部分的<code>例3</code></td>
+</tr>
+<tr>
+<td align="left">–</td>
+<td align="left">自减1</td>
+<td align="left"><code>a--</code> 或 <code>--a</code></td>
+<td align="left">等效于：a = a - 1; 或者 a-=1;(-=在下面赋值运算符会介绍)跟++一样，也有前后之分。</td>
+</tr>
+</tbody></table>
+<center>表1</center>
+
+<h3 id="1-2：位运算符"><a href="#1-2：位运算符" class="headerlink" title="1.2：位运算符"></a>1.2：位运算符</h3><p>位运算符包含：</p>
+<table>
+<thead>
+<tr>
+<th align="left">运算符</th>
+<th align="left">说明</th>
+<th align="left">示例</th>
+<th align="left">特性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">&amp;</td>
+<td align="left">与运算</td>
+<td align="left">a &amp; b</td>
+<td align="left"><code>1&amp;1=1</code>、<code>1&amp;0=0</code>、<code>0&amp;1=0</code>、<code>0&amp;0=0</code></td>
+</tr>
+<tr>
+<td align="left">|</td>
+<td align="left">或运算</td>
+<td align="left">a | b</td>
+<td align="left">`1</td>
+</tr>
+<tr>
+<td align="left">~</td>
+<td align="left">取反</td>
+<td align="left">~a</td>
+<td align="left"><code>~1=0</code>、<code>~0=1</code></td>
+</tr>
+<tr>
+<td align="left">^</td>
+<td align="left">异或运算</td>
+<td align="left">a ^ b</td>
+<td align="left"><code>1^1=0</code>、<code>1^0=1</code>、<code>0^1=1</code>、<code>0^0=0</code></td>
+</tr>
+<tr>
+<td align="left">&gt;&gt;&gt;</td>
+<td align="left">无符号右移</td>
+<td align="left">a &gt;&gt;&gt; b</td>
+<td align="left">参考<code>注1</code></td>
+</tr>
+<tr>
+<td align="left">&gt;&gt;</td>
+<td align="left">右移运算</td>
+<td align="left">a &gt;&gt; b</td>
+<td align="left">参考<code>注1</code></td>
+</tr>
+<tr>
+<td align="left">&lt;&lt;</td>
+<td align="left">左移运算</td>
+<td align="left">a &lt;&lt; b</td>
+<td align="left">参考<code>注1</code></td>
+</tr>
+</tbody></table>
+<center>表2</center>
+
+<article class="message is-warning"><div class="message-body">
+<p>⚜️ <strong>注1：</strong></p>
+<p>关于位运算的一切，请参考：<a href="/2020/03/10/JAVA有关位运算的全套梳理/">JAVA有关位运算的全套梳理</a></p>
+</div></article>
+
+<h3 id="1-3：赋值运算符"><a href="#1-3：赋值运算符" class="headerlink" title="1.3：赋值运算符"></a>1.3：赋值运算符</h3><p>赋值运算符主要包含：</p>
+<table>
+<thead>
+<tr>
+<th align="left">运算符</th>
+<th align="left">说明</th>
+<th align="left">示例</th>
+<th align="left">备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">=</td>
+<td align="left">赋值</td>
+<td align="left"><code>a = 1</code></td>
+<td align="left">让等号左边的值等于右边的值，这在之前的示例代码里已经体现过很多次了，简单一个变量声明的初始化值都需要用到赋值运算符：int a = 1;</td>
+</tr>
+<tr>
+<td align="left">+=</td>
+<td align="left">做加法操作后并且赋值给自身</td>
+<td align="left"><code>a += 2</code></td>
+<td align="left">等效于：a = a + 2这种等式一般是从右往左执行，所以该表达式的意思是：先让a自身加上2，然后再把这个结果重新赋值给a。</td>
+</tr>
+<tr>
+<td align="left">-=</td>
+<td align="left">做减法操作后并且赋值给自身</td>
+<td align="left"><code>a -= 2</code></td>
+<td align="left">同上，只不过换成减法</td>
+</tr>
+<tr>
+<td align="left">*=</td>
+<td align="left">做乘法操作后并且赋值给自身</td>
+<td align="left"><code>a *= 2</code></td>
+<td align="left">同上，只不过换成乘法</td>
+</tr>
+<tr>
+<td align="left">/=</td>
+<td align="left">做除法操作后并且赋值给自身</td>
+<td align="left"><code>a /= 2</code></td>
+<td align="left">同上，只不过换成除法</td>
+</tr>
+<tr>
+<td align="left">%=</td>
+<td align="left">做取余运算并且赋值给自身</td>
+<td align="left">a %= 2</td>
+<td align="left">同上，只不过换成取余运算</td>
+</tr>
+<tr>
+<td align="left">&lt;&lt;=</td>
+<td align="left">做左移运算并且赋值给自身</td>
+<td align="left"><code>a &lt;&lt;= 2</code></td>
+<td align="left">等同于：a = a &lt;&lt; 2</td>
+</tr>
+<tr>
+<td align="left">&gt;&gt;=</td>
+<td align="left">做右移运算并且赋值给自身</td>
+<td align="left"><code>a &gt;&gt;= 2</code></td>
+<td align="left">等同于：a = a &gt;&gt; 2</td>
+</tr>
+<tr>
+<td align="left">&gt;&gt;&gt;=</td>
+<td align="left">做无符号左移运算并且赋值给自身</td>
+<td align="left"><code>a &gt;&gt;&gt;= 2</code></td>
+<td align="left">等同于：a = a &gt;&gt;&gt;2</td>
+</tr>
+<tr>
+<td align="left">&amp;=</td>
+<td align="left">做与运算并且赋值给自身</td>
+<td align="left"><code>a &amp;= 2</code></td>
+<td align="left">等同于：a = a &amp; 2</td>
+</tr>
+<tr>
+<td align="left">|=</td>
+<td align="left">做或运算并且赋值给自身</td>
+<td align="left">`a</td>
+<td align="left">= 2`</td>
+</tr>
+<tr>
+<td align="left">^=</td>
+<td align="left">做异或运算并且赋值给自身</td>
+<td align="left"><code>a ^= 2</code></td>
+<td align="left">等同于：a = a ^ 2</td>
+</tr>
+</tbody></table>
+<center>表3</center>
+
+<h3 id="1-4：关系运算符"><a href="#1-4：关系运算符" class="headerlink" title="1.4：关系运算符"></a>1.4：关系运算符</h3><p>关系运算符用来运算两个值的大小、是否相等等关系，经过关系运算符运算后的两个值的结果一定是boolean类型的，结果只有真或假。</p>
+<p>关系运算符主要包含：</p>
+<table>
+<thead>
+<tr>
+<th align="left">运算符</th>
+<th align="left">说明</th>
+<th align="left">示例</th>
+<th align="left">备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">&gt;</td>
+<td align="left">大于</td>
+<td align="left"><code>a &gt; b</code></td>
+<td align="left">参考<code>注2</code></td>
+</tr>
+<tr>
+<td align="left">&gt;=</td>
+<td align="left">大于等于</td>
+<td align="left"><code>a &gt;= b</code></td>
+<td align="left">同上，判断关系为大于等于</td>
+</tr>
+<tr>
+<td align="left">&lt;=</td>
+<td align="left">小于等于</td>
+<td align="left"><code>a &lt;= b</code></td>
+<td align="left">同上，判断关系为小于等于</td>
+</tr>
+<tr>
+<td align="left">&lt;</td>
+<td align="left">小于</td>
+<td align="left"><code>a &lt; b</code></td>
+<td align="left">同上，只不过判断关系为小于</td>
+</tr>
+<tr>
+<td align="left">==</td>
+<td align="left">等于</td>
+<td align="left"><code>a == b</code></td>
+<td align="left">参考<code>注3</code></td>
+</tr>
+<tr>
+<td align="left">!=</td>
+<td align="left">不等于</td>
+<td align="left"><code>a != b</code></td>
+<td align="left">参考<code>注4</code></td>
+</tr>
+</tbody></table>
+<center>表4</center>
+
+<article class="message is-warning"><div class="message-body">
+<p>⚜️ <strong>注2：</strong></p>
+<p>用于判断两个值大小，需要注意的是，比较大小的关系运算符无法用来比较大部分的引用变量，因此不存在cat1 &gt; cat2这种代码。</p>
+<figure class="highlight java"><figcaption><span>代码块1</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> a = <span class="string">'我'</span>;</span><br><span class="line"><span class="keyword">int</span> b = <span class="number">25105</span>;</span><br><span class="line"><span class="keyword">boolean</span> d = a &gt; b;</span><br></pre></td></tr></table></figure>
+
+<p>上面结果为<code>false</code></p>
+</div></article>
+
+<article class="message is-warning"><div class="message-body">
+<p>⚜️ <strong>注3：</strong></p>
+<p>用来判断两个变量是否相等：</p>
+<figure class="highlight java"><figcaption><span>代码块2</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//声明a、b、c，并为它们赋初始值</span></span><br><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> b = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> c = <span class="number">2</span>;</span><br><span class="line"><span class="comment">//运算符==返回的是布尔型数据，因为其判定结果只有真或假两种状态</span></span><br><span class="line"><span class="keyword">boolean</span> d = a == b;</span><br><span class="line"><span class="keyword">boolean</span> e = a == c;</span><br></pre></td></tr></table></figure>
+
+<p>如上代码，d的结果为<code>true</code>，e的结果为<code>false</code></p>
+<p>简单的基本类型，判等方式是很简单的，值一样，就相等，哪怕类型不一致：</p>
+<figure class="highlight java"><figcaption><span>代码块3</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> a = <span class="string">'我'</span>;</span><br><span class="line"><span class="keyword">int</span> b = <span class="number">25105</span>;</span><br><span class="line"><span class="keyword">boolean</span> d = a == b;</span><br></pre></td></tr></table></figure>
+
+<p>d的结果值依然是<code>true</code>，因为汉字“我”对应的<code>Unicode码</code>值就是25105。</p>
+<p>通过上面两个例子，可以发现基本类型的判等很单纯，就是看数值是否相等而已。</p>
+<p><em>⚠️下面的内容建议看完<code>LV3-1</code>后再来阅读</em></p>
+<p>既然==是用来为变量判等的，那它是否也能用来判断复杂的<code>引用变量</code>是否相等呢？</p>
+<p>现在让我们回忆一下<code>LV3-1</code>里的那只猫，通过那只猫的例子，我们知道了引用变量其实是一个保存了某个内存地址的变量，它并不是一个实际的对象，它只是保存了实际对象的地址，方便通过它在内存中访问到那块对象数据，我们还知道，当一个类利用其构造方法被<code>new</code>出来的时候，它就产生了一个对象，对象就会存在一块内存区域内，此时对象自然就有了对应的内存地址，而将该地址赋值给对应的引用变量，这样就可以通过此引用变量访问具体的对象内容了，如果还是不太熟悉这个过程，请再次翻看<code>LV1-2</code>中的<code>图7</code>。</p>
+<p>现在我们仍然用那个猫类来说明问题：</p>
+<figure class="highlight java"><figcaption><span>代码块4</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> gender = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">int</span> age = <span class="number">5</span>;</span><br><span class="line">    <span class="keyword">int</span> color = <span class="number">1</span>;</span><br><span class="line">    String name = <span class="string">"加菲"</span>;</span><br><span class="line"> </span><br><span class="line">    Cat cat1 = <span class="keyword">new</span> Cat(gender, age, color, name);</span><br><span class="line">    Cat cat2 = <span class="keyword">new</span> Cat(gender, age, color, name);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">boolean</span> result = cat1 == cat2;</span><br><span class="line">    System.out.println(result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由上面的代码可知，我们造出来了两只猫，它们的各项属性全部一致，那么现在请思考一下，引用变量cat1和引用变量cat2是否相等呢？上面的结果应该是true还是false？</p>
+<p>输出结果为false。</p>
+<p>为什么呢？它们明明什么都一样！！回忆一下我们在上一节有关引用变量的解释，引用变量保存的是内存地址，而我们这个例子中，造出了两只猫，尽管它们啥都一致，但事实上，这种一致你可以理解成“巧合”，碰巧有两只名字都叫加菲的5岁黑色公猫，</p>
+<p>所以实际上它们是不同的两个对象，它们在地球上所处的位置不可能穿透对方的身体重合存在，抽象到计算机层面，它们需要存储在不同的存储单元内，存储单元不同，自然存储地址不同，那么cat1和cat2又怎么会相等呢。</p>
+<p>那么现在再思考下，如何让cat1和cat2相等？</p>
+<p>现在让我们改造下上面的代码：</p>
+<figure class="highlight java"><figcaption><span>代码块5</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> gender = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">int</span> age = <span class="number">5</span>;</span><br><span class="line">    <span class="keyword">int</span> color = <span class="number">1</span>;</span><br><span class="line">    String name = <span class="string">"加菲"</span>;</span><br><span class="line"> </span><br><span class="line">    Cat cat1 = <span class="keyword">new</span> Cat(gender, age, color, name);</span><br><span class="line">    Cat cat2 = cat1; <span class="comment">//这里把cat1直接赋值给cat2</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">boolean</span> result = cat1 == cat2;</span><br><span class="line">    System.out.println(result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这时结果就为<code>true</code>，这里应该都理解为什么了，因为cat1本身是引用变量，保存的是<code>new</code>出来那个对象的<code>内存地址</code>，现在直接把它的值赋值给cat2，因此cat2里保存的地址跟cat1中是一样的，所以它们一定是相等的。</p>
+</div></article>
+
+<article class="message is-warning"><div class="message-body">
+<p>⚜️ <strong>注4：</strong></p>
+<p>跟<code>==</code>性质一样，只不过它用来表示不等于，运算方式跟<code>==相反</code>。</p>
+<p>所以：</p>
+<figure class="highlight java"><figcaption><span>代码块6</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> a = <span class="string">'我'</span>;</span><br><span class="line"><span class="keyword">int</span> b = <span class="number">25105</span>;</span><br><span class="line"><span class="keyword">boolean</span> d = a != b;</span><br></pre></td></tr></table></figure>
+
+<p>这个例子把==换成!=后，输出结果就为false了，引用变量就不举例了。</p>
+</div></article>
+
+<h3 id="1-5：逻辑运算符"><a href="#1-5：逻辑运算符" class="headerlink" title="1.5：逻辑运算符"></a>1.5：逻辑运算符</h3><p>讲完了关系运算符，现在再来认识下逻辑运算符，逻辑运算符主要用来运算两个或多个布尔值间的真假，因此逻辑运算符两边连接的变量必须是<code>boolean</code>类型的数据。</p>
+<table>
+<thead>
+<tr>
+<th align="left">运算符</th>
+<th align="left">说明</th>
+<th align="left">示例</th>
+<th align="left">备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">&amp;</td>
+<td align="left">与运算</td>
+<td align="left"><code>a &amp; b</code></td>
+<td align="left">参考<code>注5</code></td>
+</tr>
+<tr>
+<td align="left">|</td>
+<td align="left">或运算</td>
+<td align="left">`a</td>
+<td align="left">b`</td>
+</tr>
+<tr>
+<td align="left">^</td>
+<td align="left">异或</td>
+<td align="left"><code>a ^ b</code></td>
+<td align="left">同上，只是逻辑同“异或”</td>
+</tr>
+<tr>
+<td align="left">!</td>
+<td align="left">非</td>
+<td align="left"><code>!a</code></td>
+<td align="left">参考<code>注6</code></td>
+</tr>
+<tr>
+<td align="left">&amp;&amp;</td>
+<td align="left">短路与</td>
+<td align="left"><code>a &amp;&amp; b</code></td>
+<td align="left">参考<code>注7</code></td>
+</tr>
+<tr>
+<td align="left">||</td>
+<td align="left">短路或</td>
+<td align="left">`a</td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<center>表5</center>
+
+<article class="message is-warning"><div class="message-body">
+<p>⚜️ <strong>注5：</strong></p>
+<p>没错，又是这个符号，我们在<code>1.2</code>里的位运算符里已经碰到过了，只不过1.2里它连接两个非boolean类型的变量，用来表示两个变量的二进制数的与运算，</p>
+<p>这里它被用来连接两个boolean类型的变量时，由于boolean类型的数据仅有真和假两种状态，因此它仅用来做简单的与门转换：</p>
+<figure class="highlight java"><figcaption><span>代码块7</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">boolean</span> a = <span class="keyword">true</span>;</span><br><span class="line"><span class="keyword">boolean</span> b = <span class="keyword">false</span>;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">boolean</span> c = a &amp; b; <span class="comment">//a和b相与</span></span><br><span class="line"> </span><br><span class="line">System.out.println(c);</span><br></pre></td></tr></table></figure>
+
+<p>结果为false，因为true &amp; false = false</p>
+<p>结合<code>1.4</code>里的关系运算符，可以知道任意关系运算符连接的式子，其结果一定是一个boolean值，那么我们可以写更为复杂的相与代码：</p>
+<figure class="highlight java"><figcaption><span>代码块8</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> b = <span class="number">1</span>;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">int</span> c = <span class="number">5</span>;</span><br><span class="line"><span class="keyword">int</span> d = <span class="number">6</span>;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">boolean</span> r = (a == b) &amp; (c != d);</span><br><span class="line"> </span><br><span class="line">System.out.println(r);</span><br></pre></td></tr></table></figure>
+
+<p>结果为true，因为使用关系运算符==连接的a、b结果为true，而用!=连接的c、d的结果也为true，那么最终符号&amp;连接的boolean值就被简化成了：true &amp; true</p>
+<p>结果自然是true，利用这种特性我们后续在java程序里可以做很多逻辑判定，比如我们之前举得Cat类里的run方法：</p>
+<figure class="highlight java"><figcaption><span>代码块9</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (age &gt; <span class="number">10</span>) &#123; <span class="comment">//这里就是一个逻辑判定，利用关系运算符&gt;连接两个数，当age大于10的时候条件成立为true，输出10km/h，否则输出下面的15km/h</span></span><br><span class="line">            System.out.println(<span class="string">"奔跑速度：10km/h"</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">       System.out.println(<span class="string">"奔跑速度：15km/h"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</div></article>
+
+<article class="message is-warning"><div class="message-body">
+<p>⚜️ <strong>注6：</strong></p>
+<p>类似位运算里的按位取反<code>~</code>，即让自己的结果值反过来，例如：</p>
+<figure class="highlight java"><figcaption><span>代码块10</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> b = <span class="number">1</span>;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">boolean</span> c = !(a == b);</span><br><span class="line"> </span><br><span class="line">System.out.println(c);</span><br></pre></td></tr></table></figure>
+
+<p>a == b这个关系语句的结果肯定是true，但是它在外层加了!，意味着结果要跟实际值反过来，因此c的结果为false。</p>
+</div></article>
+
+<article class="message is-warning"><div class="message-body">
+<p>⚜️ <strong>注7：</strong></p>
+<p>相比<code>&amp;</code>，短路与更加“智能”，如果第一个条件不成立，则直接返回结果，这么说不容易理解，下面通过一个例子来说明：</p>
+<figure class="highlight java"><figcaption><span>代码块11</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> b = <span class="number">1</span>;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">int</span> c = <span class="number">5</span>;</span><br><span class="line"><span class="keyword">int</span> d = <span class="number">6</span>;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">boolean</span> r1 = (a != b) &amp; (c != d);</span><br><span class="line"><span class="keyword">boolean</span> r2 = (a != b) &amp;&amp; (c != d);</span><br><span class="line"> </span><br><span class="line">System.out.println(r1);</span><br><span class="line">System.out.println(r2);</span><br></pre></td></tr></table></figure>
+
+<p>上面r1和r2的执行结果是一致的，都是false，但执行的方式却不一样：</p>
+<p><img src="http://myblog.sharemer.com/2020/02/28/20200228-1-1.png?imageView2/0/w/650" alt="图1" title="图1"></p>
+<p>上述就是短路与和正常与参与运算时的区别，但是如果第一个条件成立(true)，仍然需要进行后续条件的判断，这时与&amp;无异，但短路与总是尽可能的减少关系运算的次数。</p>
+<p>一般建议使用短路与做与逻辑运算。</p>
+</div></article>
+
+<h3 id="1-6：三元运算符"><a href="#1-6：三元运算符" class="headerlink" title="1.6：三元运算符"></a>1.6：三元运算符</h3><p>通过对上面关系运算符的了解后，现在来了解一种特殊的运算符：三元运算符（xx ? yy : zz）。</p>
+<p>三元运算符会结合赋值运算符和关系运算符合计使用，旨在挑选符合自己预期的值（其实跟后面要讲的条件语句if/else有些像）。</p>
+<p>现在来简单了解下其结构：</p>
+<p><img src="http://myblog.sharemer.com/2020/02/28/20200228-1-2.png?imageView2/0/w/800" alt="图2" title="图2"></p>
+<p>上图展示了一个三元表达式以及其组成部分。</p>
+<p>最终s的值为11；</p>
+<p>我们还可以嵌套三元表达式：</p>
+<figure class="highlight java"><figcaption><span>代码块12</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//声明变量&amp;赋值</span></span><br><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> b = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">int</span> c = <span class="number">5</span>;</span><br><span class="line"><span class="keyword">int</span> d = <span class="number">6</span>;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">int</span> s = (a &gt; b) ? <span class="number">10</span> : ((c &lt; d) ? <span class="number">66</span> : <span class="number">77</span>);</span><br></pre></td></tr></table></figure>
+
+<p>首先判断a&gt;b是否成立，由a和b的值可知是不成立的，所以会跳过10这个结果，选取冒号后面的值，而冒号后面仍然是一个三元表达式，这个三元表达式的值为66，因此s最终等于66。理论上java允许你无限套娃，但为保证代码可读性，不建议嵌套三元表达式</p>
+<h2 id="二、运算符间的优先级"><a href="#二、运算符间的优先级" class="headerlink" title="二、运算符间的优先级"></a>二、运算符间的优先级</h2><h3 id="2-1：运算顺序猜想"><a href="#2-1：运算顺序猜想" class="headerlink" title="2.1：运算顺序猜想"></a>2.1：运算顺序猜想</h3><p>我们在之前的示例代码里经常会看到类似下面这样的代码：</p>
+<figure class="highlight java"><figcaption><span>代码块13</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>; <span class="comment">//声明变量a，并通过赋值运算符为其赋值</span></span><br><span class="line"><span class="keyword">int</span> b = <span class="number">2</span>; <span class="comment">//声明变量b，并通过赋值运算符为其赋值</span></span><br><span class="line"><span class="keyword">int</span> c = a + b; <span class="comment">//声明变量c，然后通过赋值运算符为其赋值，值为a和b通过算术运算符”+“运算后的结果值</span></span><br></pre></td></tr></table></figure>
+
+<p>那么类似int c = a + b;这种语句，它的执行顺序为什么不是直接给c通过”=“运算符赋上a的值，然后再计算a和b的”+“运算呢？即：</p>
+<p><img src="http://myblog.sharemer.com/2020/02/28/20200228-1-3.png?imageView2/0/w/600" alt="图3" title="图3"></p>
+<p>如图，如果我们把int c = a + b;这种语句按照上图的拆分方式进行运算，那么这段代码的最终运行结果将是c等于a的值，其余无事发生，然而经过前面那么多示例，我们知道这是不对的，c的值应该等于a+b的运行结果才对，那么这就意味着加法运算发生在赋值运算之前，即：</p>
+<p><img src="http://myblog.sharemer.com/2020/02/28/20200228-1-4.png?imageView2/0/w/420" alt="图4" title="图4"></p>
+<p>真正的执行过程应该是<code>图4</code>中的过程，这样的结果似乎在告诉我们，运算符之间存在着某种等级，等级高的先执行，等级低的往后稍稍，这就是运算符之间的执行优先级，通过我们对int c = a + b;这种语句的了解，我们至少已经知道了”+“应该发生在”=“之前，即算术运算符应发生在赋值运算符之前执行。</p>
+<h3 id="2-2：运算符的优先级列表"><a href="#2-2：运算符的优先级列表" class="headerlink" title="2.2：运算符的优先级列表"></a>2.2：运算符的优先级列表</h3><p>那么我们现在就来列一下所有运算符的执行优先级：</p>
+<table>
+<thead>
+<tr>
+<th align="left">优先级（从高至低排序）</th>
+<th align="left">运算符</th>
+<th align="left">结合性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">1</td>
+<td align="left">( )　[ ] 　.</td>
+<td align="left">左→右</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">!　~　 ++　 –</td>
+<td align="left">右→左</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">*　/　%</td>
+<td align="left">左→右</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">+　-</td>
+<td align="left">左→右</td>
+</tr>
+<tr>
+<td align="left">5</td>
+<td align="left">&lt;&lt;　&gt;&gt;　&gt;&gt;&gt;</td>
+<td align="left">左→右</td>
+</tr>
+<tr>
+<td align="left">6</td>
+<td align="left">&lt;　&lt;=　&gt;　&gt;=　instanceof</td>
+<td align="left">左→右</td>
+</tr>
+<tr>
+<td align="left">7</td>
+<td align="left">==　!=</td>
+<td align="left">左→右</td>
+</tr>
+<tr>
+<td align="left">8</td>
+<td align="left">&amp;</td>
+<td align="left">左→右</td>
+</tr>
+<tr>
+<td align="left">9</td>
+<td align="left">^</td>
+<td align="left">左→右</td>
+</tr>
+<tr>
+<td align="left">10</td>
+<td align="left">|</td>
+<td align="left">左→右</td>
+</tr>
+<tr>
+<td align="left">11</td>
+<td align="left">&amp;&amp;</td>
+<td align="left">左→右</td>
+</tr>
+<tr>
+<td align="left">12</td>
+<td align="left">||</td>
+<td align="left">左→右</td>
+</tr>
+<tr>
+<td align="left">13</td>
+<td align="left">? :</td>
+<td align="left">右→左</td>
+</tr>
+<tr>
+<td align="left">14</td>
+<td align="left">=　+=　-=　*=　/=　&amp;=　|=　^=　~=　&lt;&lt;=　&gt;&gt;=　&gt;&gt;&gt;=</td>
+<td align="left">右→左</td>
+</tr>
+</tbody></table>
+<center>表6</center>
+
+<h3 id="2-3：实例"><a href="#2-3：实例" class="headerlink" title="2.3：实例"></a>2.3：实例</h3><p>结合上面的表，我们通过几个例子来固化一下我们的记忆：</p>
+<h4 id="例1：括号的运算等级是最高的"><a href="#例1：括号的运算等级是最高的" class="headerlink" title="例1：括号的运算等级是最高的"></a>例1：括号的运算等级是最高的</h4><figure class="highlight java"><figcaption><span>代码块14</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> b = (a + <span class="number">1</span>) * <span class="number">2</span>; <span class="comment">//这里由于括号运算符的优先级高于一切，所以括号内的内容a+1先被执行</span></span><br><span class="line"><span class="keyword">int</span> c = (a + b) + (<span class="number">22</span> + <span class="number">5</span>); <span class="comment">//如果有多个括号，则依据"结合性"可知，应该由左至右执行，因此这里的执行顺序为先执行a+b，再执行22+5</span></span><br></pre></td></tr></table></figure>
+
+<p>这个符合数学里的运算规则，例如：</p>
+<p>乘除法的优先级高于加减法，所以类似“int c = a + b * 2”，首先计算的是b<em>2的值，然后再拿着b</em>2的结果跟a相加，但是如果改成“int c = (a + b) *2”的话，就变成先执行括号内的加法运算，然后拿着和去和2相乘。</p>
+<h4 id="例2：括号、非运算、与运算、或运算结合"><a href="#例2：括号、非运算、与运算、或运算结合" class="headerlink" title="例2：括号、非运算、与运算、或运算结合"></a>例2：括号、非运算、与运算、或运算结合</h4><p>普通非运算+括号：</p>
+<figure class="highlight java"><figcaption><span>代码块15</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//非</span></span><br><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> b = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">boolean</span> s = !(a &lt; b); <span class="comment">// 按照优先级，括号内的先运算，a&lt;b结果为true，然后再运算仅次于括号的运算符!，最后赋值给s，s的值为false</span></span><br></pre></td></tr></table></figure>
+
+<p>嵌套非运算：</p>
+<figure class="highlight java"><figcaption><span>代码块16</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> b = <span class="number">2</span>;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">boolean</span> s = !!(a &lt; b);</span><br><span class="line"><span class="comment">// ↑首先计算优先级高的括号内的值，为true，然后同级非运算的结合性按照从右到左，因此右侧的"!"首先参与运算，</span></span><br><span class="line"><span class="comment">// 结果为false，然后拿着结果再用最外侧的"!"参与运算，结果为true</span></span><br></pre></td></tr></table></figure>
+
+<p>括号、嵌套非运算、与、或运算结合：</p>
+<figure class="highlight java"><figcaption><span>代码块17</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> b = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">boolean</span> c = <span class="keyword">false</span>;</span><br><span class="line"><span class="keyword">boolean</span> d = <span class="keyword">true</span>;</span><br><span class="line"><span class="keyword">boolean</span> e = <span class="keyword">true</span>;</span><br><span class="line"><span class="keyword">boolean</span> s = !!(a &lt; b) &amp; c &amp; d | !!!e;</span><br></pre></td></tr></table></figure>
+
+<p>这个看起来很复杂，我们借助流程图来梳理下：</p>
+<p><img src="http://myblog.sharemer.com/2020/02/28/20200228-1-5.png?imageView2/0/w/850" alt="图5" title="图5"></p>
+<h4 id="例3：i-、-i问题"><a href="#例3：i-、-i问题" class="headerlink" title="例3：i++、++i问题"></a>例3：i++、++i问题</h4><p>由<code>表6</code>可知++运算符优先级仅次于括号。</p>
+<p>类似这种++的方式，有两种写法：a++和++a</p>
+<p>++位于变量的前面和后面最终变量的结果都是一样的：</p>
+<figure class="highlight java"><figcaption><span>代码块18</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//声明变量a和b，它们的值都是1</span></span><br><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> b = <span class="number">1</span>;</span><br><span class="line"> </span><br><span class="line">a++; <span class="comment">//a自增1，++放其后面</span></span><br><span class="line">++b; <span class="comment">//b自增1，++放其前面</span></span><br><span class="line"> </span><br><span class="line">System.out.println(a);</span><br><span class="line">System.out.println(b);</span><br></pre></td></tr></table></figure>
+
+<p>最终输出结果都是2，那么++放前面和放后面有何区别呢？</p>
+<figure class="highlight java"><figcaption><span>代码块19</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//声明变量a和b，它们的值都是1</span></span><br><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> b = <span class="number">1</span>;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">int</span> c = a++; <span class="comment">//a自增1，++放其后面，将a的值赋值给c</span></span><br><span class="line"><span class="keyword">int</span> d = ++b; <span class="comment">//b自增1，++放其前面，将b的值赋值给d</span></span><br><span class="line"> </span><br><span class="line">System.out.println(a);</span><br><span class="line">System.out.println(b);</span><br><span class="line"> </span><br><span class="line">System.out.println(c);</span><br><span class="line">System.out.println(d);</span><br></pre></td></tr></table></figure>
+
+<p>上面输出结果，a和b自然还是等于2，但是c和d却不相同：</p>
+<p>c最终等于1，d最终等于2.</p>
+<p>首先我们知道++操作相当于变量自增，a++相当于a = a+1，所以类似这种语句：</p>
+<p>int c = a++;</p>
+<p>相当于有两个赋值运算符：</p>
+<p><img src="http://myblog.sharemer.com/2020/02/28/20200228-1-6.png?imageView2/0/w/400" alt="图6" title="图6"></p>
+<p>先记住这个流程，下面来看下++放到变量后面和前面的区别：</p>
+<p><img src="http://myblog.sharemer.com/2020/02/28/20200228-1-7.png?imageView2/0/w/798" alt="图7" title="图7"></p>
+<p>所以 int c = a ++;这段代码是先执行的赋值运算符，因此c的值等于还没完成自增前的a。相反的，如果++放到自增变量前面，则意味着它的执行优先级高于赋值运算符，所以 int c = ++ a;这段代码是先执行++操作，然后再将++后的值赋值给c。</p>
+<p>❓ 思考：请问下方的a、b、c的最终值分别等于多少？</p>
+<figure class="highlight java"><figcaption><span>代码块20</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> b = a++ + <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> c = ++b + <span class="number">1</span>;</span><br><span class="line">System.out.println(b);</span><br><span class="line">System.out.println(c);</span><br></pre></td></tr></table></figure>
+
+<p>答案：<span class="heimu">a=2，b=3，c=4</span></p>
+<h2 id="三、运算符下的自动转型"><a href="#三、运算符下的自动转型" class="headerlink" title="三、运算符下的自动转型"></a>三、运算符下的自动转型</h2><p>我们通过<a href="https://exceting.github.io/2020/02/26/LV1-2%EF%BC%9Ajava%E4%B8%AD%E7%9A%84%E5%8F%98%E9%87%8F%E7%B1%BB%E5%9E%8B/">LV-2-四</a>可以知道基本类型是会区分按照取值范围来区分大小的，我们再次把它们的大小等级贴出来：</p>
+<p><img src="http://myblog.sharemer.com/2020/02/26/20200226-1-5.png?imageView2/0/w/900" alt="图8" title="图8"></p>
+<p>我们还知道了小类型不可以接收大类型的数据，如必须要接收，需要做强转，而如果使用一个大类型接一个小类型的值，则这个小类型的值会自动转换成对应的大类型，这种类型的转换叫类型自动转换，贴一下当时的例子。</p>
+<h4 id="例1："><a href="#例1：" class="headerlink" title="例1："></a>例1：</h4><figure class="highlight java"><figcaption><span>代码块21</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> α = <span class="number">1</span>; <span class="comment">//声明int型的变量α，值为1</span></span><br><span class="line"><span class="keyword">long</span> β = α; <span class="comment">//声明long型的变量β，使其值等于α的值，由于long型表示范围比int型大，因此α的值不需要做类型强转，但其实是α的值类型已经自动转成long了</span></span><br></pre></td></tr></table></figure>
+
+<p>现在结合本节的运算符知识再来看下这个类型自动转换是如何发生的：</p>
+<p>首先声明的α是一个int型，然后使用大类型的β接收，此时α的值（也就是1）已经自动转成了long型，这就是运算符导致了类型的转换，在本例中，=就是这个运算符（赋值运算符），因为α的值被赋给了β，因此α值的类型自动提升为long。</p>
+<article class="message is-success"><div class="message-body">
+<p>结论：运算符可以导致某些数据变量值的类型转换。</p>
+</div></article>
+
+<h4 id="例2："><a href="#例2：" class="headerlink" title="例2："></a>例2：</h4><figure class="highlight java"><figcaption><span>代码块22</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">float</span> b = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> s = a + b; <span class="comment">//这是不允许的，经过加法运算，a的值已经被自动提升为float型，因此a+b的值是一个float型，较小的int是不能接收较大的float型的</span></span><br></pre></td></tr></table></figure>
+
+<p>上述注释内的内容用下图来描述：</p>
+<p><img src="http://myblog.sharemer.com/2020/02/28/20200228-1-8.png?imageView2/0/w/600" alt="图9" title="图9"></p>
+<p>其实最终都要回归到强制类型转换那一部分内容来。</p>
+<p>现在改一下代码，解决上述问题：</p>
+<figure class="highlight java"><figcaption><span>代码块23</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">float</span> b = <span class="number">1</span>;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">float</span> s = a + b; <span class="comment">//这种改法就是直接用大类型接收</span></span><br><span class="line">或：</span><br><span class="line"><span class="keyword">int</span> s = a + (<span class="keyword">int</span>)b; <span class="comment">//这种改法就是将大类型强转成小类型，这样它们经过加法运算后类型不会提升，还是int</span></span><br></pre></td></tr></table></figure>
+
+<p>参考注释，最终还是回归到要么用大类型接收小类型，要么强转的解决方法上来，针对例1，我们可以说是“=”运算符让变量α的值类型提升，而在本例，我们可以说是“+”运算符让a的值类型得到提升。</p>
+<p>为了巩固这块的知识，再让我们改造下上面的代码：</p>
+<figure class="highlight java"><figcaption><span>代码块24</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">5</span>;</span><br><span class="line"><span class="keyword">int</span> b = <span class="number">2</span>;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">float</span> s = a / b;</span><br><span class="line"> </span><br><span class="line">System.out.println(s);</span><br></pre></td></tr></table></figure>
+
+<p>这个结果是<code>2.5</code>吗？答案并不是，最终结果是<code>2</code>.</p>
+<p>为什么？？明明5/2是2.5啊，这里结合前面的例子，你只需要稍微思考一下就可以得到答案：</p>
+<p><img src="http://myblog.sharemer.com/2020/02/28/20200228-1-9.png?imageView2/0/w/650" alt="图10" title="图10"></p>
+<p>❓ 思考：那如何才能得到自己想要的2.5呢？</p>
+<p>答案：<span class="heimu">很简单，只需要提升a+b的类型就行了，即：(float)a+b 或 a+(float)b，当然，两个都强转也行：(float)a+(float)b，这样在上图①处在除法运算时就会将a/b的结果提升为float，自然就不会失精。</span></p>
+</div><ul class="post-copyright"><li><strong>本文标题：</strong><a href="http://yoursite.com/2020/02/28/LV1-3：java中的运算符/">LV1-3：java中的运算符</a></li><li><strong>本文作者：</strong><a href="http://yoursite.com">S</a></li><li><strong>本文链接：</strong><a href="http://yoursite.com/2020/02/28/LV1-3：java中的运算符/">http://yoursite.com/2020/02/28/LV1-3：java中的运算符/</a></li><li><strong>版权声明：</strong><span>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</span></li></ul><div><div class="recommend-post"><span class="is-size-6 has-text-grey has-mr-7"># 相关文章</span><br><span>  1.<a class="is-size-6" href="/2020/03/10/JAVA%E6%9C%89%E5%85%B3%E4%BD%8D%E8%BF%90%E7%AE%97%E7%9A%84%E5%85%A8%E5%A5%97%E6%A2%B3%E7%90%86/" target="_blank">JAVA有关位运算的全套梳理</a><br></span><span>  2.<a class="is-size-6" href="/2020/02/26/LV1-2%EF%BC%9Ajava%E4%B8%AD%E7%9A%84%E5%8F%98%E9%87%8F%E7%B1%BB%E5%9E%8B/" target="_blank">LV1-2：java中的变量类型</a><br></span><span>  3.<a class="is-size-6" href="/2020/02/25/LV1-1%EF%BC%9A%E5%AE%89%E8%A3%85java%E7%8E%AF%E5%A2%83&amp;%E7%AC%AC%E4%B8%80%E4%B8%AAjava%E7%A8%8B%E5%BA%8F/" target="_blank">LV1-1：安装java环境&amp;第一个java程序</a><br></span></div></div><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/social-share.js/1.0.16/css/share.min.css"><div class="social-share"></div><script src="https://cdnjs.loli.net/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button is-info donate"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="http://myblog.sharemer.com/alipay_qrcode.png" alt="支付宝"></span></a><a class="button is-success donate"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="http://myblog.sharemer.com/wx_qrcode.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2020/03/10/JAVA%E6%9C%89%E5%85%B3%E4%BD%8D%E8%BF%90%E7%AE%97%E7%9A%84%E5%85%A8%E5%A5%97%E6%A2%B3%E7%90%86/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">JAVA有关位运算的全套梳理</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2020/02/26/LV1-2%EF%BC%9Ajava%E4%B8%AD%E7%9A%84%E5%8F%98%E9%87%8F%E7%B1%BB%E5%9E%8B/"><span class="level-item">LV1-2：java中的变量类型</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">评论</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/gitalk/1.6.0/gitalk.css"><script> $.getScript('/js/gitalk.min.js', function () { 
+            var gitalk = new Gitalk({
+            id: '3c3cf89511d4bc24c6a575b513e4f707',
+            repo: 'exceting.github.io',
+            owner: 'exceting',
+            clientID: '17297b562584b5cec3d7',
+            clientSecret: '46c7652ed4f09fb1d847d15df81500a5a2ceeae8',
+            admin: ["exceting"],
+            createIssueManually: true,
+            distractionFreeMode: false,
+            perPage: 10,
+            pagerDirection: 'last',
+            
+            
+            enableHotKey: true,
+            isLocked: false
+        })
+        gitalk.render('comment-container')});</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1 is-sticky"><div class="card widget toc-scroll" id="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list toc"><li><a class="is-flex toc-item" id="toc-item-一、运算符" href="#一、运算符"><span>一、运算符</span></a><ul class="menu-list toc"><li><a class="is-flex toc-item" id="toc-item-1-1：算术运算符" href="#1-1：算术运算符"><span>1.1：算术运算符</span></a></li><li><a class="is-flex toc-item" id="toc-item-1-2：位运算符" href="#1-2：位运算符"><span>1.2：位运算符</span></a></li><li><a class="is-flex toc-item" id="toc-item-1-3：赋值运算符" href="#1-3：赋值运算符"><span>1.3：赋值运算符</span></a></li><li><a class="is-flex toc-item" id="toc-item-1-4：关系运算符" href="#1-4：关系运算符"><span>1.4：关系运算符</span></a></li><li><a class="is-flex toc-item" id="toc-item-1-5：逻辑运算符" href="#1-5：逻辑运算符"><span>1.5：逻辑运算符</span></a></li><li><a class="is-flex toc-item" id="toc-item-1-6：三元运算符" href="#1-6：三元运算符"><span>1.6：三元运算符</span></a></li></ul></li><li><a class="is-flex toc-item" id="toc-item-二、运算符间的优先级" href="#二、运算符间的优先级"><span>二、运算符间的优先级</span></a><ul class="menu-list toc"><li><a class="is-flex toc-item" id="toc-item-2-1：运算顺序猜想" href="#2-1：运算顺序猜想"><span>2.1：运算顺序猜想</span></a></li><li><a class="is-flex toc-item" id="toc-item-2-2：运算符的优先级列表" href="#2-2：运算符的优先级列表"><span>2.2：运算符的优先级列表</span></a></li><li><a class="is-flex toc-item" id="toc-item-2-3：实例" href="#2-3：实例"><span>2.3：实例</span></a><ul class="menu-list toc"><li><a class="is-flex toc-item" id="toc-item-例1：括号的运算等级是最高的" href="#例1：括号的运算等级是最高的"><span>例1：括号的运算等级是最高的</span></a></li><li><a class="is-flex toc-item" id="toc-item-例2：括号、非运算、与运算、或运算结合" href="#例2：括号、非运算、与运算、或运算结合"><span>例2：括号、非运算、与运算、或运算结合</span></a></li><li><a class="is-flex toc-item" id="toc-item-例3：i-、-i问题" href="#例3：i-、-i问题"><span>例3：i++、++i问题</span></a></li></ul></li></ul></li><li><a class="is-flex toc-item" id="toc-item-三、运算符下的自动转型" href="#三、运算符下的自动转型"><span>三、运算符下的自动转型</span></a><ul class="menu-list toc"><ul class="menu-list toc"><li><a class="is-flex toc-item" id="toc-item-例1：" href="#例1："><span>例1：</span></a></li><li><a class="is-flex toc-item" id="toc-item-例2：" href="#例2："><span>例2：</span></a></li></ul></ul></li></ul></div></div><script type="text/javascript" async>
+        $(document).ready(function () { //参考自 https://github.com/ppoffice/hexo-theme-icarus/pull/616/files
+            var observerTopMargin;
+            var scrollObserver;
+            var headerElems = $(".headerlink");
+            var activeTocItem;
+        
+            function initIntersectionObserver(docHeight) {
+                observerTopMargin = docHeight;
+                scrollObserver = new IntersectionObserver(scrollCallBack,
+                    {
+                        root: null,  // viewpoint
+                        rootMargin: docHeight + "px 0px -80% 0px"  // cover top 30% of viewport to the top of document
+                    })
+            }
+        
+            function scrollCallBack(entries, observer) {
+                if ($(window).scrollTop() > observerTopMargin * 0.7) { 
+                    // User somehow scroll to 70% of observerTopMargin (which is inited as 200% document height)
+                    // Observer top margin need to extend to cover all the space to the top of the document
+                    initIntersectionObserver(observerTopMargin * 2)
+                    observer.disconnect();
+                    return;
+                }
+                let toActive;
+                if (entries[0].intersectionRatio == 1) {  // enter viewed area
+                    let entry = entries.reduce((u, v) => (u.target.toc_id > v.target.toc_id ? u : v));  // get the lowest item
+                    toActive = $("#toc-item-" + $(entry.target).attr("href").substr(1));
+                } else {
+                    let entry = entries.reduce((u, v) => (u.target.toc_id < v.target.toc_id ? u : v));  // get the highest item
+                    let idx = Math.max(entry.target.toc_id - 1, 0);
+                    toActive = $("#toc-item-" + $(headerElems[idx]).attr("href").substr(1));
+                }
+                if (activeTocItem) activeTocItem.removeClass("is-current");
+                activeTocItem = toActive
+                activeTocItem.addClass("is-current");
+            }
+        
+            initIntersectionObserver($(document).height() * 2);
+            headerElems.each(function (index, obj) {
+                obj.toc_id = index;
+                scrollObserver.observe(obj);
+            })
+        });</script></div><div class="card widget"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="" src="http://myblog.sharemer.com/avatar.jpg" alt="S"></figure><p class="title is-size-4 is-block line-height-inherit">S</p><p class="is-size-6 is-block">随机和因果，命运与无常，兼而有之</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>上海</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">45</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">35</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">57</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/exceting" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile"><a class="level-item button is-transparent is-white is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/exceting"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-white is-marginless" target="_blank" rel="noopener" title="Bilibili" href="https://www.bilibili.com"><i class="fab fa-bilibili"></i></a><a class="level-item button is-transparent is-white is-marginless" target="_blank" rel="noopener" title="Email" href="mailto:1807301715@qq.com"><i class="fa fa-envelope"></i></a><a class="level-item button is-transparent is-white is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget"><div class="card-content"><h3 class="menu-label">最新评论</h3><span class="body_hot_comment">加载中，最新评论有1分钟缓存...</span></div></div><div class="card widget"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content size-small"><p><time dateTime="2020-03-09T16:51:00.000Z">2020-03-10</time></p><p class="title is-6"><a class="link-muted" href="/2020/03/10/JAVA%E6%9C%89%E5%85%B3%E4%BD%8D%E8%BF%90%E7%AE%97%E7%9A%84%E5%85%A8%E5%A5%97%E6%A2%B3%E7%90%86/">JAVA有关位运算的全套梳理</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/JAVA%E5%9F%BA%E7%A1%80/">JAVA基础</a> / <a class="link-muted" href="/categories/JAVA%E5%9F%BA%E7%A1%80/JAVA%E8%BF%9B%E5%8C%96%E8%AE%BA/">JAVA进化论</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-02-28T12:20:00.000Z">2020-02-28</time></p><p class="title is-6"><a class="link-muted" href="/2020/02/28/LV1-3%EF%BC%9Ajava%E4%B8%AD%E7%9A%84%E8%BF%90%E7%AE%97%E7%AC%A6/">LV1-3：java中的运算符</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/JAVA%E5%9F%BA%E7%A1%80/">JAVA基础</a> / <a class="link-muted" href="/categories/JAVA%E5%9F%BA%E7%A1%80/JAVA%E8%BF%9B%E5%8C%96%E8%AE%BA/">JAVA进化论</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-02-26T12:03:00.000Z">2020-02-26</time></p><p class="title is-6"><a class="link-muted" href="/2020/02/26/LV1-2%EF%BC%9Ajava%E4%B8%AD%E7%9A%84%E5%8F%98%E9%87%8F%E7%B1%BB%E5%9E%8B/">LV1-2：java中的变量类型</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/JAVA%E5%9F%BA%E7%A1%80/">JAVA基础</a> / <a class="link-muted" href="/categories/JAVA%E5%9F%BA%E7%A1%80/JAVA%E8%BF%9B%E5%8C%96%E8%AE%BA/">JAVA进化论</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-02-25T06:57:00.000Z">2020-02-25</time></p><p class="title is-6"><a class="link-muted" href="/2020/02/25/LV1-1%EF%BC%9A%E5%AE%89%E8%A3%85java%E7%8E%AF%E5%A2%83&amp;%E7%AC%AC%E4%B8%80%E4%B8%AAjava%E7%A8%8B%E5%BA%8F/">LV1-1：安装java环境&amp;第一个java程序</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/JAVA%E5%9F%BA%E7%A1%80/">JAVA基础</a> / <a class="link-muted" href="/categories/JAVA%E5%9F%BA%E7%A1%80/JAVA%E8%BF%9B%E5%8C%96%E8%AE%BA/">JAVA进化论</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2019-12-13T04:52:00.000Z">2019-12-13</time></p><p class="title is-6"><a class="link-muted" href="/2019/12/13/IDEA%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E8%A1%A8%E5%8D%95demo/">IDEA插件开发（一）一个简单的表单demo</a></p><p class="is-uppercase"><i class="fas fa-folder-open has-text-grey"> </i><a class="link-muted" href="/categories/IDEA%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91/">IDEA插件开发</a></p></div></article></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile is-marginless" href="/categories/DB/"><span class="level-start"><span class="level-item">DB</span></span><span class="level-end"><span class="level-item tag">4</span></span></a><ul class="mr-0"><li><a class="level is-mobile is-marginless" href="/categories/DB/InfluxDB/"><span class="level-start"><span class="level-item">InfluxDB</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/DB/MySQL/"><span class="level-start"><span class="level-item">MySQL</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/DB/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/"><span class="level-start"><span class="level-item">分布式缓存</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li></ul></li><li><a class="level is-mobile is-marginless" href="/categories/IDEA%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91/"><span class="level-start"><span class="level-item">IDEA插件开发</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/JAVA%E5%9F%BA%E7%A1%80/"><span class="level-start"><span class="level-item">JAVA基础</span></span><span class="level-end"><span class="level-item tag">6</span></span></a><ul class="mr-0"><li><a class="level is-mobile is-marginless" href="/categories/JAVA%E5%9F%BA%E7%A1%80/JAVA%E8%BF%9B%E5%8C%96%E8%AE%BA/"><span class="level-start"><span class="level-item">JAVA进化论</span></span><span class="level-end"><span class="level-item tag">4</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/JAVA%E5%9F%BA%E7%A1%80/JVM/"><span class="level-start"><span class="level-item">JVM</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li></ul></li><li><a class="level is-mobile is-marginless" href="/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"><span class="level-start"><span class="level-item">并发编程</span></span><span class="level-end"><span class="level-item tag">7</span></span></a><ul class="mr-0"><li><a class="level is-mobile is-marginless" href="/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/JUC/"><span class="level-start"><span class="level-item">JUC</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li></ul></li><a class="level is-mobile is-marginless" href="/categories/"><span class="level-start"><span class="level-item">查看全部&gt;&gt;</span></span></a></ul></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile is-marginless" href="/archives/2020/03/"><span class="level-start"><span class="level-item">三月 2020</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2020/02/"><span class="level-start"><span class="level-item">二月 2020</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2019/12/"><span class="level-start"><span class="level-item">十二月 2019</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2019/10/"><span class="level-start"><span class="level-item">十月 2019</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/archives/2019/09/"><span class="level-start"><span class="level-item">九月 2019</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><a class="level is-mobile is-marginless" href="/archives/"><span class="level-start"><span class="level-item">查看全部&gt;&gt;</span></span></a></ul></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/NIO/"><span class="tag">NIO</span><span class="tag is-grey-lightest">8</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"><span class="tag">网络编程</span><span class="tag is-grey-lightest">8</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"><span class="tag">并发编程</span><span class="tag is-grey-lightest">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ThreadLocal/"><span class="tag">ThreadLocal</span><span class="tag is-grey-lightest">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"><span class="tag">基础知识</span><span class="tag is-grey-lightest">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%95%99%E7%A8%8B/"><span class="tag">教程</span><span class="tag is-grey-lightest">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%B1%A0%E5%8C%96%E6%8A%80%E6%9C%AF/"><span class="tag">池化技术</span><span class="tag is-grey-lightest">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%BF%9E%E6%8E%A5%E6%B1%A0/"><span class="tag">连接池</span><span class="tag is-grey-lightest">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Druid/"><span class="tag">Druid</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/JVM/"><span class="tag">JVM</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/OpenTracing/"><span class="tag">OpenTracing</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/aop/"><span class="tag">aop</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ioc/"><span class="tag">ioc</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/juc/"><span class="tag">juc</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/redis/"><span class="tag">redis</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/spring/"><span class="tag">spring</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/"><span class="tag">分布式缓存</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/"><span class="tag">多线程</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"><span class="tag">数据库</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"><span class="tag">数据结构</span><span class="tag is-grey-lightest">2</span></a></div></div><div class="field is-grouped is-grouped-multiline"><a class="tags has-addons" href="/tags/"><span class="tag">查看全部&gt;&gt;</span></a></div></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">订阅更新</h3><form action="https://feedburner.google.com/fb/a/mailverify" method="post" target="popupwindow" onsubmit="window.open(&#039;https://feedburner.google.com/fb/a/mailverify?uri=removeifFeedsId&#039;,&#039;popupwindow&#039;,&#039;scrollbars=yes,width=550,height=520&#039;);return true"><input type="hidden" value="removeifFeedsId" name="uri"><input type="hidden" name="loc" value="en_US"><div class="field has-addons"><div class="control has-icons-left is-expanded"><input class="input" name="email" type="email" placeholder="Email"><span class="icon is-small is-left"><i class="fas fa-envelope"></i></span></div><div class="control"><input class="button is-primary" type="submit" value="订阅"></div></div><p class="help">输入邮箱开始订阅，更博后邮件通知！</p></form></div></div></div></div></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="http://myblog.sharemer.com/logooo.png" alt="S" height="28"></a><p class="size-small"><span>&copy; 2020 S</span>  Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>,Modify by <a href="https://github.com/removeif/hexo-theme-amazing" target="_blank">removeif</a> <br><span>© 版权说明：[本站所有内容均收集于互联网或自己创作，方便于本人记录和学习，如有侵权，请<a href="/message" target="_blank">留言</a>，我会立即处理]<br /></span><span><span id="statistic-times">loading...</span><script>function createTime(time) {
+            var n = new Date(time);
+            now.setTime(now.getTime() + 250),
+                days = (now - n) / 1e3 / 60 / 60 / 24,
+                dnum = Math.floor(days),
+                hours = (now - n) / 1e3 / 60 / 60 - 24 * dnum,
+                hnum = Math.floor(hours),
+            1 == String(hnum).length && (hnum = "0" + hnum),
+                minutes = (now - n) / 1e3 / 60 - 1440 * dnum - 60 * hnum,
+                mnum = Math.floor(minutes),
+            1 == String(mnum).length && (mnum = "0" + mnum),
+                seconds = (now - n) / 1e3 - 86400 * dnum - 3600 * hnum - 60 * mnum,
+                snum = Math.round(seconds),
+            1 == String(snum).length && (snum = "0" + snum),
+                document.getElementById("statistic-times").innerHTML = "❤️本站自 <strong>"+time.split(" ")[0].replace(/\//g,".")+"</strong> 已运行 <strong>" + dnum + "</strong> 天 <strong>" + hnum + "</strong> 小时 <strong>" + mnum + "</strong> 分 <strong>" + snum + "</strong> 秒！❤️";
+        }var now = new Date();setInterval("createTime('2018/12/29 00:00:00')", 250,"");</script><br></span><div class="size-small"><span>❤️感谢 <strong><span id="busuanzi_value_site_uv">99+</span></strong> 小伙伴的 <strong><span id="busuanzi_value_site_pv">99+</span></strong> 次光临！❤️</span></div></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/exceting"><i class="fab fa-github"></i></a></p></div><div class="sideMusic"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="/js/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script><meting-js style="width: auto;height: 2000px;" server="netease" type="playlist" id="2755914162" theme="#2980b9" loop="all" autoplay="false" order="list" storageName="aplayer-setting" lrctype="0" list-max-height="400px" fixed="true"></meting-js></div></div></div></div></footer><script src="https://cdnjs.loli.net/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            site: {
+                url: 'http://yoursite.com',
+                external_link: {"enable":true,"exclude":[]}
+            },
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="https://cdnjs.loli.net/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" defer></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back-to-top.js" defer></script><!--!--><!--!--><script src="https://cdnjs.loli.net/ajax/libs/lightgallery/1.6.12/js/lightgallery-all.min.js" defer></script><script src="https://cdnjs.loli.net/ajax/libs/justifiedGallery/3.7.0/js/jquery.justifiedGallery.min.js" defer></script><!--!--><!--!--><!--!--><script src="/js/toc.js" defer></script><script src="/js/main.js" defer></script><script>$.getScript('/js/comment-issue-data.js',function(){loadIssueData('17297b562584b5cec3d7','46c7652ed4f09fb1d847d15df81500a5a2ceeae8','exceting','exceting.github.io',false);})</script><link rel="stylesheet" href="/css/insight.css"><div class="searchbox ins-search"><div class="searchbox-container ins-search-container"><div class="searchbox-input-wrapper"><input class="searchbox-input ins-search-input" type="text" placeholder="想要查找什么..."><span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span></div><div class="searchbox-result-wrapper ins-section-wrapper"><div class="ins-section-container"></div></div></div></div><script>(function (window) {
+            var INSIGHT_CONFIG = {
+                TRANSLATION: {
+                    POSTS: '文章',
+                    PAGES: '页面',
+                    CATEGORIES: '分类',
+                    TAGS: '标签',
+                    UNTITLED: '(无标题)',
+                },
+                CONTENT_URL: '/content.json',
+            };
+            window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+        })(window);</script><script src="/js/insight.js" defer></script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.js"></script><script type="text/javascript">var pjax = new Pjax({
+            elements: "a",//代表点击链接就更新
+            selectors: [  //代表要更新的节点
+                ".section",
+                "title"
+            ],
+            cache: true,
+            cacheBust:false
+        })
+
+        function loadBusuanzi(){
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js", function () {});
+        }
+
+        // 开始 PJAX 执行的函数
+        document.addEventListener('pjax:send', function () {
+        });
+        
+        // PJAX 完成之后执行的函数，可以和上面的重载放在一起
+        document.addEventListener('pjax:complete', function () {
+            $(".section").css({opacity:1});
+            if(true){
+                $.getScript('/js/comment-issue-data.js',function(){loadIssueData('17297b562584b5cec3d7','46c7652ed4f09fb1d847d15df81500a5a2ceeae8','exceting','exceting.github.io',false);});
+            }
+            if(false){
+                loadMathJax();
+            }
+            loadMainJs(jQuery, window.moment, window.ClipboardJS, window.IcarusThemeSettings);
+            loadBackTop();
+            loadBusuanzi();
+            if(typeof loadBanner == 'function'){
+                loadBanner();
+            }
+        });</script></body></html>
