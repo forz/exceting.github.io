@@ -12285,7 +12285,7 @@ article.article .article-meta {
   line-height: inherit !important;
 }
 .image.is-7by3 {
-  padding-top: 42.8%;
+  padding-top: 22.8%;
 }
 .image.is-7by3 img {
   bottom: 0;
@@ -12293,4 +12293,7 @@ article.article .article-meta {
   position: absolute;
   right: 0;
   top: 0;
+}
+.image.is-4by3 {
+  padding-top: 55%;
 }

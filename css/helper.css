@@ -469,7 +469,7 @@
  *          Image helpers
  * --------------------------------- */
 .image.is-7by3 {
-  padding-top: 42.8%;
+  padding-top: 22.8%;
 }
 .image.is-7by3 img {
   bottom: 0;
@@ -477,4 +477,7 @@
   position: absolute;
   right: 0;
   top: 0;
+}
+.image.is-4by3 {
+  padding-top: 55%;
 }
