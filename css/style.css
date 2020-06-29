@@ -10385,6 +10385,7 @@ fieldset[disabled] .select select:hover {
 .navbar-main .navbar-start {
   justify-content: flex-start;
   margin-right: auto;
+  font-size: 16px;
 }
 .navbar-main .navbar-end {
   justify-content: flex-end;
