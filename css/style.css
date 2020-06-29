@@ -12269,6 +12269,7 @@ article.article .article-meta {
 }
 .justify-content-center {
   justify-content: center !important;
+  color: #f14668;
 }
 .flex-shrink-1 {
   flex-shrink: 1 !important;
