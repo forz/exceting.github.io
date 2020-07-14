@@ -10450,8 +10450,12 @@ fieldset[disabled] .select select:hover {
   font-size: 0.85em;
 }
 .content code {
-  padding: 0;
-  background: transparent;
+  background-color: #f5f5f5;
+  color: #f14668;
+  font-size: 0.875em;
+  font-weight: normal;
+  border-radius: 3px;
+  padding: 0.1em 0.4em 0.1em;
 }
 .content blockquote footer strong + cite {
   margin-left: 0.5em;
